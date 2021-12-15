@@ -1,14 +1,12 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { version: versionColor } = require('../color-formatters')
-const { addv } = require('../text-formatters')
-const { optionalUrl } = require('../validators')
-const {
+import Joi from 'joi'
+import { version as versionColor } from '../color-formatters.js'
+import { addv } from '../text-formatters.js'
+import {
+  optionalUrl,
   optionalDottedVersionNClausesWithOptionalSuffix,
-} = require('../validators')
-const { BaseJsonService, InvalidResponse, NotFound } = require('..')
-const { isSnapshotVersion } = require('./nexus-version')
+} from '../validators.js'
+import { BaseJsonService, InvalidResponse, NotFound } from '../index.js'
+import { isSnapshotVersion } from './nexus-version.js'
 
 const nexus2SearchApiSchema = Joi.object({
   data: Joi.array()
@@ -53,112 +51,108 @@ const queryParamSchema = Joi.object({
   nexusVersion: Joi.equal('2', '3'),
 }).required()
 
-module.exports = class Nexus extends BaseJsonService {
-  static get category() {
-    return 'version'
+export default class Nexus extends BaseJsonService {
+  static category = 'version'
+
+  static route = {
+    base: 'nexus',
+    pattern: ':repo(r|s|[^/]+)/:groupId/:artifactId',
+    queryParamSchema,
   }
 
-  static get route() {
-    return {
-      base: 'nexus',
-      pattern: ':repo(r|s|[^/]+)/:groupId/:artifactId',
-      queryParamSchema,
-    }
+  static auth = {
+    userKey: 'nexus_user',
+    passKey: 'nexus_pass',
+    serviceKey: 'nexus',
   }
 
-  static get auth() {
-    return { userKey: 'nexus_user', passKey: 'nexus_pass', serviceKey: 'nexus' }
-  }
+  static examples = [
+    {
+      title: 'Sonatype Nexus (Releases)',
+      pattern: 'r/:groupId/:artifactId',
+      namedParams: {
+        groupId: 'org.apache.commons',
+        artifactId: 'commons-lang3',
+      },
+      queryParams: {
+        server: 'https://nexus.pentaho.org',
+        nexusVersion: '3',
+      },
+      staticPreview: this.render({
+        version: '3.9',
+      }),
+      documentation: `
+    <p>
+      Specifying 'nexusVersion=3' when targeting Nexus 3 servers will speed up the badge rendering.
+      Note that you can use this query parameter with any Nexus badge type (Releases, Snapshots, or Repository).
+    </p>
+    `,
+    },
+    {
+      title: 'Sonatype Nexus (Snapshots)',
+      pattern: 's/:groupId/:artifactId',
+      namedParams: {
+        groupId: 'com.google.guava',
+        artifactId: 'guava',
+      },
+      queryParams: {
+        server: 'https://oss.sonatype.org',
+      },
+      staticPreview: this.render({
+        version: 'v24.0-SNAPSHOT',
+      }),
+    },
+    {
+      title: 'Sonatype Nexus (Repository)',
+      pattern: ':repo/:groupId/:artifactId',
+      namedParams: {
+        repo: 'developer',
+        groupId: 'ai.h2o',
+        artifactId: 'h2o-automl',
+      },
+      queryParams: {
+        server: 'https://repository.jboss.org/nexus',
+      },
+      staticPreview: this.render({
+        version: '3.22.0.2',
+      }),
+    },
+    {
+      title: 'Sonatype Nexus (Query Options)',
+      pattern: ':repo/:groupId/:artifactId',
+      namedParams: {
+        repo: 'fs-public-snapshots',
+        groupId: 'com.progress.fuse',
+        artifactId: 'fusehq',
+      },
+      queryParams: {
+        server: 'https://repository.jboss.org/nexus',
+        queryOpt: ':c=agent-apple-osx:p=tar.gz',
+      },
+      staticPreview: this.render({
+        version: '7.0.1-SNAPSHOT',
+      }),
+      documentation: `
+    <p>
+      Note that you can use query options with any Nexus badge type (Releases, Snapshots, or Repository).
+    </p>
+    <p>
+      Query options should be provided as key=value pairs separated by a colon.
+    </p>
+    <p>
+      Possible values:
+      <ul>
+        <li><a href="https://nexus.pentaho.org/swagger-ui/#/search/search">All Nexus 3 badges</a></li>
+        <li><a href="https://repository.sonatype.org/nexus-restlet1x-plugin/default/docs/path__artifact_maven_resolve.html">Nexus 2 Releases and Snapshots badges</a></li>
+        <li><a href=https://repository.sonatype.org/nexus-indexer-lucene-plugin/default/docs/path__lucene_search.html">Nexus 2 Repository badges</a></li>
+      </ul>
+    </p>
+    `,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Sonatype Nexus (Releases)',
-        pattern: 'r/:groupId/:artifactId',
-        namedParams: {
-          groupId: 'org.apache.commons',
-          artifactId: 'commons-lang3',
-        },
-        queryParams: {
-          server: 'https://nexus.pentaho.org',
-          nexusVersion: '3',
-        },
-        staticPreview: this.render({
-          version: '3.9',
-        }),
-        documentation: `
-        <p>
-          Specifying 'nexusVersion=3' when targeting Nexus 3 servers will speed up the badge rendering. 
-          Note that you can use this query parameter with any Nexus badge type (Releases, Snapshots, or Repository).
-        </p>
-        `,
-      },
-      {
-        title: 'Sonatype Nexus (Snapshots)',
-        pattern: 's/:groupId/:artifactId',
-        namedParams: {
-          groupId: 'com.google.guava',
-          artifactId: 'guava',
-        },
-        queryParams: {
-          server: 'https://oss.sonatype.org',
-        },
-        staticPreview: this.render({
-          version: 'v24.0-SNAPSHOT',
-        }),
-      },
-      {
-        title: 'Sonatype Nexus (Repository)',
-        pattern: ':repo/:groupId/:artifactId',
-        namedParams: {
-          repo: 'developer',
-          groupId: 'ai.h2o',
-          artifactId: 'h2o-automl',
-        },
-        queryParams: {
-          server: 'https://repository.jboss.org/nexus',
-        },
-        staticPreview: this.render({
-          version: '3.22.0.2',
-        }),
-      },
-      {
-        title: 'Sonatype Nexus (Query Options)',
-        pattern: ':repo/:groupId/:artifactId',
-        namedParams: {
-          repo: 'fs-public-snapshots',
-          groupId: 'com.progress.fuse',
-          artifactId: 'fusehq',
-        },
-        queryParams: {
-          server: 'https://repository.jboss.org/nexus',
-          queryOpt: ':c=agent-apple-osx:p=tar.gz',
-        },
-        staticPreview: this.render({
-          version: '7.0.1-SNAPSHOT',
-        }),
-        documentation: `
-        <p>
-          Note that you can use query options with any Nexus badge type (Releases, Snapshots, or Repository).
-        </p>
-        <p>
-          Query options should be provided as key=value pairs separated by a colon.
-        </p>
-        <p>
-          Possible values:
-          <ul>
-            <li><a href="https://nexus.pentaho.org/swagger-ui/#/search/search">All Nexus 3 badges</a></li>
-            <li><a href="https://repository.sonatype.org/nexus-restlet1x-plugin/default/docs/path__artifact_maven_resolve.html">Nexus 2 Releases and Snapshots badges</a></li>
-            <li><a href=https://repository.sonatype.org/nexus-indexer-lucene-plugin/default/docs/path__lucene_search.html">Nexus 2 Repository badges</a></li>
-          </ul>
-        </p>
-        `,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'nexus' }
+  static defaultBadgeData = {
+    label: 'nexus',
   }
 
   static render({ version }) {
@@ -168,7 +162,7 @@ module.exports = class Nexus extends BaseJsonService {
     }
   }
 
-  addQueryParamsToQueryString({ qs, queryOpt }) {
+  addQueryParamsToQueryString({ searchParams, queryOpt }) {
     // Users specify query options with 'key=value' pairs, using a
     // colon delimiter between pairs ([:k1=v1[:k2=v2[...]]]).
     // queryOpt will be a string containing those key/value pairs,
@@ -178,7 +172,7 @@ module.exports = class Nexus extends BaseJsonService {
       const paramParts = keyValuePair.split('=')
       const paramKey = paramParts[0]
       const paramValue = paramParts[1]
-      qs[paramKey] = paramValue
+      searchParams[paramKey] = paramValue
     })
   }
 
@@ -200,7 +194,7 @@ module.exports = class Nexus extends BaseJsonService {
   }
 
   async fetch2({ server, repo, groupId, artifactId, queryOpt }) {
-    const qs = {
+    const searchParams = {
       g: groupId,
       a: artifactId,
     }
@@ -215,19 +209,19 @@ module.exports = class Nexus extends BaseJsonService {
     } else {
       schema = nexus2ResolveApiSchema
       url += 'service/local/artifact/maven/resolve'
-      qs.r = repo
-      qs.v = 'LATEST'
+      searchParams.r = repo
+      searchParams.v = 'LATEST'
     }
 
     if (queryOpt) {
-      this.addQueryParamsToQueryString({ qs, queryOpt })
+      this.addQueryParamsToQueryString({ searchParams, queryOpt })
     }
 
     const json = await this._requestJson(
       this.authHelper.withBasicAuth({
         schema,
         url,
-        options: { qs },
+        options: { searchParams },
         errorMessages: {
           404: 'artifact not found',
         },
@@ -238,7 +232,7 @@ module.exports = class Nexus extends BaseJsonService {
   }
 
   async fetch3({ server, repo, groupId, artifactId, queryOpt }) {
-    const qs = {
+    const searchParams = {
       group: groupId,
       name: artifactId,
       sort: 'version',
@@ -246,18 +240,18 @@ module.exports = class Nexus extends BaseJsonService {
 
     switch (repo) {
       case 's':
-        qs.prerelease = 'true'
+        searchParams.prerelease = 'true'
         break
       case 'r':
-        qs.prerelease = 'false'
+        searchParams.prerelease = 'false'
         break
       default:
-        qs.repository = repo
+        searchParams.repository = repo
         break
     }
 
     if (queryOpt) {
-      this.addQueryParamsToQueryString({ qs, queryOpt })
+      this.addQueryParamsToQueryString({ searchParams, queryOpt })
     }
 
     const url = `${server}${
@@ -268,7 +262,7 @@ module.exports = class Nexus extends BaseJsonService {
       this.authHelper.withBasicAuth({
         schema: nexus3SearchApiSchema,
         url,
-        options: { qs },
+        options: { searchParams },
         errorMessages: {
           404: 'artifact not found',
         },

@@ -1,53 +1,34 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { coveragePercentage } = require('../color-formatters')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { coveragePercentage } from '../color-formatters.js'
+import { BaseJsonService } from '../index.js'
 
 const schema = Joi.object({
   covered_percent: Joi.number().min(0).max(100).required(),
 }).required()
 
-module.exports = class Coveralls extends BaseJsonService {
+export default class Coveralls extends BaseJsonService {
   static category = 'coverage'
   static route = {
     base: 'coveralls',
-    pattern: ':vcsType(github|bitbucket)?/:user/:repo/:branch*',
+    pattern: ':vcsType(github|bitbucket)/:user/:repo/:branch*',
   }
 
   static examples = [
     {
-      title: 'Coveralls github',
-      pattern: ':vcsType/:user/:repo',
+      title: 'Coveralls',
       namedParams: { vcsType: 'github', user: 'jekyll', repo: 'jekyll' },
+      pattern: ':vcsType(github|bitbucket)/:user/:repo',
       staticPreview: this.render({ coverage: 86 }),
     },
     {
-      title: 'Coveralls github branch',
-      pattern: ':vcsType/:user/:repo/:branch',
-      namedParams: {
-        vcsType: 'github',
-        user: 'lemurheavy',
-        repo: 'coveralls-ruby',
-        branch: 'master',
-      },
-      staticPreview: this.render({ coverage: 91.81 }),
-    },
-    {
-      title: 'Coveralls bitbucket',
-      pattern: ':vcsType/:user/:repo',
-      namedParams: { vcsType: 'bitbucket', user: 'pyKLIP', repo: 'pyklip' },
-      staticPreview: this.render({ coverage: 86 }),
-    },
-    {
-      title: 'Coveralls bitbucket branch',
-      pattern: ':vcsType/:user/:repo/:branch',
+      title: 'Coveralls branch',
       namedParams: {
         vcsType: 'bitbucket',
         user: 'pyKLIP',
         repo: 'pyklip',
         branch: 'master',
       },
+      pattern: ':vcsType(github|bitbucket)/:user/:repo/:branch',
       staticPreview: this.render({ coverage: 96 }),
     },
   ]
@@ -67,7 +48,7 @@ module.exports = class Coveralls extends BaseJsonService {
       vcsType || 'github'
     }/${user}/${repo}.json`
     const options = {
-      qs: {
+      searchParams: {
         // The API returns the latest result (across any branch) if no branch is explicitly specified,
         // whereas the Coveralls native badge (and the Shields.io badges for Coveralls) show
         // the coverage for the default branch if no branch is explicitly specified. If the user

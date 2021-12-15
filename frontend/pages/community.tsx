@@ -1,11 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import { baseUrl } from '../constants'
+import { getBaseUrl } from '../constants'
 import Meta from '../components/meta'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import { BaseFont, GlobalStyle, H3 } from '../components/common'
-
+import Heroku from '../../static/images/heroku-logotype-horizontal-purple.svg'
+import NodePing from '../../static/images/nodeping.svg'
+import Sentry from '../../static/images/sentry-logo-black.svg'
 const MainContainer = styled(BaseFont)`
   text-align: center;
 `
@@ -18,7 +20,12 @@ const SponsorContainer = styled.div`
   padding-top: 20px;
 `
 
+const SponsorItems = styled.div`
+  text-align: left;
+`
+
 export default function SponsorsPage(): JSX.Element {
+  const baseUrl = getBaseUrl()
   return (
     <MainContainer>
       <GlobalStyle />
@@ -35,29 +42,23 @@ export default function SponsorsPage(): JSX.Element {
         <h4>Sponsors</h4>
         ❤️ These companies help us by donating their services to shields:
         <ul style={{ listStyleType: 'none' }}>
-          <li>
-            <a href="https://www.heroku.com/">
-              <img
-                alt="heroku logo"
-                height="80"
-                src="/images/heroku-logotype-horizontal-purple.svg"
-              />
-            </a>
-          </li>
-          <li>
-            <a href="https://nodeping.com/">
-              <img alt="nodeping logo" height="80" src="/images/nodeping.svg" />
-            </a>
-          </li>
-          <li>
-            <a href="https://sentry.io/">
-              <img
-                alt="sentry logo"
-                height="80"
-                src="/images/sentry-logo-black.svg"
-              />
-            </a>
-          </li>
+          <SponsorItems>
+            <li>
+              <a href="https://www.heroku.com/">
+                <Heroku alt="heroku_logo" height={120} />
+              </a>
+            </li>
+            <li>
+              <a href="https://nodeping.com/">
+                <NodePing alt="nodeping_logo" height={60} />
+              </a>
+            </li>
+            <li>
+              <a href="https://sentry.io/">
+                <Sentry alt="sentry_logo" height={100} />
+              </a>
+            </li>
+          </SponsorItems>
         </ul>
         💵 These organisations help keep shields running by donating on
         OpenCollective. Your organisation can support this project by{' '}
@@ -113,9 +114,6 @@ export default function SponsorsPage(): JSX.Element {
           </li>
           <li>
             <a href="https://lgtm.com/">LGTM</a>
-          </li>
-          <li>
-            <a href="https://www.netlify.com/">Netlify</a>
           </li>
           <li>
             <a href="https://uptimerobot.com/">Uptime Robot</a>

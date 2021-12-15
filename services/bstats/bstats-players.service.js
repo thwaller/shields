@@ -1,14 +1,12 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { metric } = require('../text-formatters')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { metric } from '../text-formatters.js'
+import { BaseJsonService } from '../index.js'
 
 const schema = Joi.array()
   .items(Joi.array().items(Joi.number().required(), Joi.number().required()))
   .required()
 
-module.exports = class BStatsPlayers extends BaseJsonService {
+export default class BStatsPlayers extends BaseJsonService {
   static category = 'other'
   static route = { base: 'bstats/players', pattern: ':pluginid' }
 
@@ -36,7 +34,7 @@ module.exports = class BStatsPlayers extends BaseJsonService {
     return this._requestJson({
       schema,
       options: {
-        qs: {
+        searchParams: {
           maxElements: 1,
         },
       },

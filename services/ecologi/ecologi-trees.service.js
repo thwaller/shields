@@ -1,40 +1,25 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { metric } = require('../text-formatters')
-const { floorCount } = require('../color-formatters')
-const { nonNegativeInteger } = require('../validators')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { metric } from '../text-formatters.js'
+import { floorCount } from '../color-formatters.js'
+import { nonNegativeInteger } from '../validators.js'
+import { BaseJsonService } from '../index.js'
 
 const apiSchema = Joi.object({
   total: nonNegativeInteger,
 }).required()
 
-module.exports = class EcologiTrees extends BaseJsonService {
-  static get category() {
-    return 'other'
-  }
+export default class EcologiTrees extends BaseJsonService {
+  static category = 'other'
+  static route = { base: 'ecologi/trees', pattern: ':username' }
+  static examples = [
+    {
+      title: 'Ecologi (Trees)',
+      namedParams: { username: 'ecologi' },
+      staticPreview: this.render({ count: 250 }),
+    },
+  ]
 
-  static get route() {
-    return {
-      base: 'ecologi/trees',
-      pattern: ':username',
-    }
-  }
-
-  static get examples() {
-    return [
-      {
-        title: 'Ecologi (Trees)',
-        namedParams: { username: 'ecologi' },
-        staticPreview: this.render({ count: 250 }),
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'trees' }
-  }
+  static defaultBadgeData = { label: 'trees' }
 
   static render({ count }) {
     return { message: metric(count), color: floorCount(count, 10, 50, 100) }

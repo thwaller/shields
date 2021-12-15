@@ -1,7 +1,5 @@
-'use strict'
-
-const { URL } = require('url')
-const { InvalidParameter } = require('./errors')
+import { URL } from 'url'
+import { InvalidParameter } from './errors.js'
 
 class AuthHelper {
   constructor(
@@ -76,7 +74,7 @@ class AuthHelper {
   }
 
   static _isInsecureSslRequest({ options = {} }) {
-    const { strictSSL = true } = options
+    const strictSSL = options?.https?.rejectUnauthorized ?? true
     return strictSSL !== true
   }
 
@@ -109,8 +107,8 @@ class AuthHelper {
   }
 
   get _basicAuth() {
-    const { _user: user, _pass: pass } = this
-    return this.isConfigured ? { user, pass } : undefined
+    const { _user: username, _pass: password } = this
+    return this.isConfigured ? { username, password } : undefined
   }
 
   /*
@@ -133,7 +131,7 @@ class AuthHelper {
     const { options, ...rest } = requestParams
     return {
       options: {
-        auth,
+        ...auth,
         ...options,
       },
       ...rest,
@@ -184,12 +182,12 @@ class AuthHelper {
 
   static _mergeQueryParams(requestParams, query) {
     const {
-      options: { qs: existingQuery, ...restOptions } = {},
+      options: { searchParams: existingQuery, ...restOptions } = {},
       ...rest
     } = requestParams
     return {
       options: {
-        qs: {
+        searchParams: {
           ...existingQuery,
           ...query,
         },
@@ -209,4 +207,4 @@ class AuthHelper {
   }
 }
 
-module.exports = { AuthHelper }
+export { AuthHelper }

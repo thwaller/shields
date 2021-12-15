@@ -1,23 +1,23 @@
-'use strict'
-
-const camelcase = require('camelcase')
-const emojic = require('emojic')
-const Joi = require('@hapi/joi')
-const queryString = require('query-string')
-const BaseService = require('./base')
-const {
+import camelcase from 'camelcase'
+import emojic from 'emojic'
+import Joi from 'joi'
+import queryString from 'query-string'
+import BaseService from './base.js'
+import {
   serverHasBeenUpSinceResourceCached,
   setCacheHeadersForStaticResource,
-} = require('./cache-headers')
-const { isValidCategory } = require('./categories')
-const { MetricHelper } = require('./metric-helper')
-const { isValidRoute, prepareRoute, namedParamsForMatch } = require('./route')
-const trace = require('./trace')
+} from './cache-headers.js'
+import { isValidCategory } from './categories.js'
+import { MetricHelper } from './metric-helper.js'
+import { isValidRoute, prepareRoute, namedParamsForMatch } from './route.js'
+import trace from './trace.js'
 
 const attrSchema = Joi.object({
   name: Joi.string().min(3),
   category: isValidCategory,
+  isDeprecated: Joi.boolean().default(true),
   route: isValidRoute,
+  examples: Joi.array().has(Joi.object()).default([]),
   transformPath: Joi.func()
     .maxArity(1)
     .required()
@@ -30,11 +30,13 @@ const attrSchema = Joi.object({
   overrideTransformedQueryParams: Joi.bool().optional(),
 }).required()
 
-module.exports = function redirector(attrs) {
+export default function redirector(attrs) {
   const {
     name,
     category,
+    isDeprecated,
     route,
+    examples,
     transformPath,
     transformQueryParams,
     overrideTransformedQueryParams,
@@ -48,8 +50,9 @@ module.exports = function redirector(attrs) {
       })}Redirect`
 
     static category = category
-    static isDeprecated = true
+    static isDeprecated = isDeprecated
     static route = route
+    static examples = examples
 
     static register({ camp, metricInstance }, { rasterUrl }) {
       const { regex, captureNames } = prepareRoute({
@@ -82,7 +85,7 @@ module.exports = function redirector(attrs) {
         trace.logTrace('inbound', emojic.ticket, 'Named params', namedParams)
         trace.logTrace('inbound', emojic.crayon, 'Query params', queryParams)
 
-        const targetPath = transformPath(namedParams)
+        const targetPath = encodeURI(transformPath(namedParams))
         trace.logTrace('validate', emojic.dart, 'Target', targetPath)
 
         let urlSuffix = ask.uri.search || ''

@@ -1,11 +1,8 @@
-'use strict'
+import { renderDownloadsBadge } from '../downloads.js'
+import { InvalidParameter, NotFound } from '../index.js'
+import { BaseCratesService, keywords } from './crates-base.js'
 
-const { downloadCount: downloadCountColor } = require('../color-formatters')
-const { metric } = require('../text-formatters')
-const { InvalidParameter, NotFound } = require('..')
-const { BaseCratesService, keywords } = require('./crates-base')
-
-module.exports = class CratesDownloads extends BaseCratesService {
+export default class CratesDownloads extends BaseCratesService {
   static category = 'downloads'
   static route = {
     base: 'crates',
@@ -56,23 +53,16 @@ module.exports = class CratesDownloads extends BaseCratesService {
     },
   ]
 
-  static _getLabel(version, variant) {
-    switch (variant) {
-      case 'dv':
-        return version ? `downloads@${version}` : 'downloads@latest'
-      case 'dr':
-        return 'recent downloads'
-      default:
-        return version ? `downloads@${version}` : 'downloads'
-    }
-  }
-
   static render({ variant, downloads, version }) {
-    return {
-      label: this._getLabel(version, variant),
-      message: metric(downloads),
-      color: downloadCountColor(downloads),
+    let labelOverride
+    if (variant === 'dr') {
+      labelOverride = 'recent downloads'
+    } else if (variant === 'dv' && !version) {
+      version = 'latest'
+    } else if (!version) {
+      labelOverride = 'downloads'
     }
+    return renderDownloadsBadge({ downloads, labelOverride, version })
   }
 
   transform({ variant, json }) {

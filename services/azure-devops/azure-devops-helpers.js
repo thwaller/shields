@@ -1,7 +1,5 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { isBuildStatus } = require('../build-status')
+import Joi from 'joi'
+import { isBuildStatus } from '../build-status.js'
 
 const keywords = ['vso', 'vsts', 'azure-devops']
 
@@ -17,15 +15,18 @@ const schema = Joi.object({
     .required(),
 }).required()
 
-async function fetch(serviceInstance, { url, qs = {}, errorMessages }) {
+async function fetch(
+  serviceInstance,
+  { url, searchParams = {}, errorMessages }
+) {
   // Microsoft documentation: https://docs.microsoft.com/en-us/rest/api/vsts/build/status/get
   const { message: status } = await serviceInstance._requestSvg({
     schema,
     url,
-    options: { qs },
+    options: { searchParams },
     errorMessages,
   })
   return { status }
 }
 
-module.exports = { keywords, fetch }
+export { keywords, fetch }

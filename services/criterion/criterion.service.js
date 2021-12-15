@@ -1,14 +1,15 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { BaseJsonService } = require('..')
-const {
+import Joi from 'joi'
+import { BaseJsonService } from '../index.js'
+import {
   IMPROVED_STATUS,
   NOT_FOUND_STATUS,
   REGRESSED_STATUS,
-} = require('./constants')
+  NO_CHANGE_STATUS,
+} from './constants.js'
 
-const schema = Joi.string().allow(IMPROVED_STATUS, REGRESSED_STATUS).required()
+const schema = Joi.string()
+  .allow(IMPROVED_STATUS, REGRESSED_STATUS, NO_CHANGE_STATUS)
+  .required()
 
 /**
  * Criterion Badge Service
@@ -19,7 +20,7 @@ const schema = Joi.string().allow(IMPROVED_STATUS, REGRESSED_STATUS).required()
  * API Documentation:
  * - https://app.swaggerhub.com/apis-docs/chmoder/Criterion.dev
  */
-module.exports = class Criterion extends BaseJsonService {
+export default class Criterion extends BaseJsonService {
   static category = 'analysis'
   static route = { base: 'criterion', pattern: ':user/:repo' }
 
@@ -37,10 +38,14 @@ module.exports = class Criterion extends BaseJsonService {
   static defaultBadgeData = { label: 'criterion' }
 
   static render({ status }) {
-    let statusColor = 'brightgreen'
+    let statusColor = 'lightgrey'
 
-    if (status !== IMPROVED_STATUS) {
-      statusColor = 'yellow'
+    if (status === IMPROVED_STATUS) {
+      statusColor = 'brightgreen'
+    } else if (status === NO_CHANGE_STATUS) {
+      statusColor = 'green'
+    } else if (statusColor === REGRESSED_STATUS) {
+      statusColor = 'red'
     }
 
     return {

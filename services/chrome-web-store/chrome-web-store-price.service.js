@@ -1,9 +1,8 @@
-'use strict'
+import { currencyFromCode } from '../text-formatters.js'
+import { NotFound } from '../index.js'
+import BaseChromeWebStoreService from './chrome-web-store-base.js'
 
-const { currencyFromCode } = require('../text-formatters')
-const BaseChromeWebStoreService = require('./chrome-web-store-base')
-
-module.exports = class ChromeWebStorePrice extends BaseChromeWebStoreService {
+export default class ChromeWebStorePrice extends BaseChromeWebStoreService {
   static category = 'funding'
   static route = { base: 'chrome-web-store/price', pattern: ':storeId' }
 
@@ -25,7 +24,12 @@ module.exports = class ChromeWebStorePrice extends BaseChromeWebStoreService {
   }
 
   async handle({ storeId }) {
-    const { priceCurrency, price } = await this.fetch({ storeId })
+    const chromeWebStore = await this.fetch({ storeId })
+    const priceCurrency = chromeWebStore.priceCurrency()
+    const price = chromeWebStore.price()
+    if (priceCurrency == null || price == null) {
+      throw new NotFound({ prettyMessage: 'not found' })
+    }
     return this.constructor.render({ priceCurrency, price })
   }
 }

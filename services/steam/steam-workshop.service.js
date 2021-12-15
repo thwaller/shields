@@ -1,11 +1,10 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const prettyBytes = require('pretty-bytes')
-const { metric, formatDate } = require('../text-formatters')
-const { age: ageColor, downloadCount } = require('../color-formatters')
-const { NotFound } = require('..')
-const BaseSteamAPI = require('./steam-base')
+import Joi from 'joi'
+import prettyBytes from 'pretty-bytes'
+import { renderDownloadsBadge } from '../downloads.js'
+import { metric, formatDate } from '../text-formatters.js'
+import { age as ageColor } from '../color-formatters.js'
+import { NotFound } from '../index.js'
+import BaseSteamAPI from './steam-base.js'
 
 const documentation = `
 <p>
@@ -100,47 +99,35 @@ const fileFoundOrNotSchema = Joi.alternatives(
 )
 
 class SteamCollectionSize extends BaseSteamAPI {
-  static get category() {
-    return 'other'
+  static category = 'other'
+
+  static route = {
+    base: 'steam/collection-files',
+    pattern: ':collectionId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/collection-files',
-      pattern: ':collectionId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam Collection Files',
+      namedParams: { collectionId: '180077636' },
+      staticPreview: this.render({ size: 32 }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam Collection Files',
-        namedParams: { collectionId: '180077636' },
-        staticPreview: this.render({ size: 32 }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'files' }
+  static defaultBadgeData = {
+    label: 'files',
   }
 
   static render({ size }) {
     return { message: metric(size), color: 'brightgreen' }
   }
 
-  static get interf() {
-    return 'ISteamRemoteStorage'
-  }
+  static interf = 'ISteamRemoteStorage'
 
-  static get method() {
-    return 'GetCollectionDetails'
-  }
+  static method = 'GetCollectionDetails'
 
-  static get version() {
-    return '1'
-  }
+  static version = '1'
 
   async handle({ collectionId }) {
     const options = {
@@ -167,17 +154,11 @@ class SteamCollectionSize extends BaseSteamAPI {
 }
 
 class SteamFileService extends BaseSteamAPI {
-  static get interf() {
-    return 'ISteamRemoteStorage'
-  }
+  static interf = 'ISteamRemoteStorage'
 
-  static get method() {
-    return 'GetPublishedFileDetails'
-  }
+  static method = 'GetPublishedFileDetails'
 
-  static get version() {
-    return '1'
-  }
+  static version = '1'
 
   async onRequest({ response }) {
     throw new Error(`onRequest() wasn't implemented for ${this.name}`)
@@ -203,30 +184,24 @@ class SteamFileService extends BaseSteamAPI {
 }
 
 class SteamFileSize extends SteamFileService {
-  static get category() {
-    return 'size'
+  static category = 'size'
+
+  static route = {
+    base: 'steam/size',
+    pattern: ':fileId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/size',
-      pattern: ':fileId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam File Size',
+      namedParams: { fileId: '100' },
+      staticPreview: this.render({ fileSize: 20000 }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam File Size',
-        namedParams: { fileId: '100' },
-        staticPreview: this.render({ fileSize: 20000 }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'size' }
+  static defaultBadgeData = {
+    label: 'size',
   }
 
   static render({ fileSize }) {
@@ -239,32 +214,26 @@ class SteamFileSize extends SteamFileService {
 }
 
 class SteamFileReleaseDate extends SteamFileService {
-  static get category() {
-    return 'activity'
+  static category = 'activity'
+
+  static route = {
+    base: 'steam/release-date',
+    pattern: ':fileId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/release-date',
-      pattern: ':fileId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam Release Date',
+      namedParams: { fileId: '100' },
+      staticPreview: this.render({
+        releaseDate: new Date(0).setUTCSeconds(1538288239),
+      }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam Release Date',
-        namedParams: { fileId: '100' },
-        staticPreview: this.render({
-          releaseDate: new Date(0).setUTCSeconds(1538288239),
-        }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'release date' }
+  static defaultBadgeData = {
+    label: 'release date',
   }
 
   static render({ releaseDate }) {
@@ -278,32 +247,26 @@ class SteamFileReleaseDate extends SteamFileService {
 }
 
 class SteamFileUpdateDate extends SteamFileService {
-  static get category() {
-    return 'activity'
+  static category = 'activity'
+
+  static route = {
+    base: 'steam/update-date',
+    pattern: ':fileId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/update-date',
-      pattern: ':fileId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam Update Date',
+      namedParams: { fileId: '100' },
+      staticPreview: this.render({
+        updateDate: new Date(0).setUTCSeconds(1538288239),
+      }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam Update Date',
-        namedParams: { fileId: '100' },
-        staticPreview: this.render({
-          updateDate: new Date(0).setUTCSeconds(1538288239),
-        }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'update date' }
+  static defaultBadgeData = {
+    label: 'update date',
   }
 
   static render({ updateDate }) {
@@ -317,30 +280,24 @@ class SteamFileUpdateDate extends SteamFileService {
 }
 
 class SteamFileSubscriptions extends SteamFileService {
-  static get category() {
-    return 'rating'
+  static category = 'rating'
+
+  static route = {
+    base: 'steam/subscriptions',
+    pattern: ':fileId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/subscriptions',
-      pattern: ':fileId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam Subscriptions',
+      namedParams: { fileId: '100' },
+      staticPreview: this.render({ subscriptions: 20124 }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam Subscriptions',
-        namedParams: { fileId: '100' },
-        staticPreview: this.render({ subscriptions: 20124 }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'subscriptions' }
+  static defaultBadgeData = {
+    label: 'subscriptions',
   }
 
   static render({ subscriptions }) {
@@ -353,30 +310,24 @@ class SteamFileSubscriptions extends SteamFileService {
 }
 
 class SteamFileFavorites extends SteamFileService {
-  static get category() {
-    return 'rating'
+  static category = 'rating'
+
+  static route = {
+    base: 'steam/favorites',
+    pattern: ':fileId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/favorites',
-      pattern: ':fileId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam Favorites',
+      namedParams: { fileId: '100' },
+      staticPreview: this.render({ favorites: 20000 }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam Favorites',
-        namedParams: { fileId: '100' },
-        staticPreview: this.render({ favorites: 20000 }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'favorites' }
+  static defaultBadgeData = {
+    label: 'favorites',
   }
 
   static render({ favorites }) {
@@ -389,68 +340,48 @@ class SteamFileFavorites extends SteamFileService {
 }
 
 class SteamFileDownloads extends SteamFileService {
-  static get category() {
-    return 'downloads'
+  static category = 'downloads'
+
+  static route = {
+    base: 'steam/downloads',
+    pattern: ':fileId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/downloads',
-      pattern: ':fileId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam Downloads',
+      namedParams: { fileId: '100' },
+      staticPreview: renderDownloadsBadge({ downloads: 20124 }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam Downloads',
-        namedParams: { fileId: '100' },
-        staticPreview: this.render({ downloads: 20124 }),
-        documentation,
-      },
-    ]
-  }
+  static defaultBadgeData = { label: 'downloads' }
 
-  static get defaultBadgeData() {
-    return { label: 'downloads' }
-  }
-
-  static render({ downloads }) {
-    return { message: metric(downloads), color: downloadCount(downloads) }
-  }
-
-  async onRequest({ response }) {
-    return this.constructor.render({
-      downloads: response.lifetime_subscriptions,
-    })
+  async onRequest({ response: { lifetime_subscriptions: downloads } }) {
+    return renderDownloadsBadge({ downloads })
   }
 }
 
 class SteamFileViews extends SteamFileService {
-  static get category() {
-    return 'other'
+  static category = 'other'
+
+  static route = {
+    base: 'steam/views',
+    pattern: ':fileId',
   }
 
-  static get route() {
-    return {
-      base: 'steam/views',
-      pattern: ':fileId',
-    }
-  }
+  static examples = [
+    {
+      title: 'Steam Views',
+      namedParams: { fileId: '100' },
+      staticPreview: this.render({ views: 20000 }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Steam Views',
-        namedParams: { fileId: '100' },
-        staticPreview: this.render({ views: 20000 }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'views' }
+  static defaultBadgeData = {
+    label: 'views',
   }
 
   static render({ views }) {
@@ -462,7 +393,7 @@ class SteamFileViews extends SteamFileService {
   }
 }
 
-module.exports = {
+export {
   SteamCollectionSize,
   SteamFileSize,
   SteamFileReleaseDate,

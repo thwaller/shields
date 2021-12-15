@@ -1,7 +1,6 @@
-'use strict'
-
-const { isSemver } = require('../test-validators')
-const t = (module.exports = require('../tester').createServiceTester())
+import { isSemver } from '../test-validators.js'
+import { createServiceTester } from '../tester.js'
+export const t = await createServiceTester()
 
 t.create('gets the package version of left-pad')
   .get('/left-pad.json')
@@ -16,8 +15,8 @@ t.create('gets the package version of @cycle/core')
   .expectBadge({ label: 'npm', message: isSemver })
 
 t.create('gets a tagged package version of npm')
-  .get('/npm/next.json')
-  .expectBadge({ label: 'npm@next', message: isSemver })
+  .get('/npm/next-8.json')
+  .expectBadge({ label: 'npm@next-8', message: isSemver })
 
 t.create('gets the correct tagged package version of npm')
   .intercept(nock =>

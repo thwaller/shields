@@ -1,9 +1,7 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { coveragePercentage } = require('../color-formatters')
-const { optionalUrl } = require('../validators')
-const { BaseSvgScrapingService, NotFound } = require('..')
+import Joi from 'joi'
+import { coveragePercentage } from '../color-formatters.js'
+import { optionalUrl } from '../validators.js'
+import { BaseSvgScrapingService, NotFound } from '../index.js'
 
 const schema = Joi.object({
   message: Joi.string()
@@ -38,65 +36,57 @@ Also make sure you have set up code covrage parsing as described <a href="https:
 </p>
 `
 
-module.exports = class GitlabCoverage extends BaseSvgScrapingService {
-  static get category() {
-    return 'coverage'
+export default class GitlabCoverage extends BaseSvgScrapingService {
+  static category = 'coverage'
+
+  static route = {
+    base: 'gitlab/coverage',
+    pattern: ':user/:repo/:branch',
+    queryParamSchema,
   }
 
-  static get route() {
-    return {
-      base: 'gitlab/coverage',
-      pattern: ':user/:repo/:branch',
-      queryParamSchema,
-    }
-  }
+  static examples = [
+    {
+      title: 'Gitlab code coverage',
+      namedParams: {
+        user: 'gitlab-org',
+        repo: 'gitlab-runner',
+        branch: 'master',
+      },
+      staticPreview: this.render({ coverage: 67 }),
+      documentation,
+    },
+    {
+      title: 'Gitlab code coverage (specific job)',
+      namedParams: {
+        user: 'gitlab-org',
+        repo: 'gitlab-runner',
+        branch: 'master',
+      },
+      queryParams: { job_name: 'test coverage report' },
+      staticPreview: this.render({ coverage: 96 }),
+      documentation,
+    },
+    {
+      title: 'Gitlab code coverage (self-hosted)',
+      namedParams: { user: 'GNOME', repo: 'libhandy', branch: 'master' },
+      queryParams: { gitlab_url: 'https://gitlab.gnome.org' },
+      staticPreview: this.render({ coverage: 93 }),
+      documentation,
+    },
+    {
+      title: 'Gitlab code coverage (self-hosted, specific job)',
+      namedParams: { user: 'GNOME', repo: 'libhandy', branch: 'master' },
+      queryParams: {
+        gitlab_url: 'https://gitlab.gnome.org',
+        job_name: 'unit-test',
+      },
+      staticPreview: this.render({ coverage: 93 }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'Gitlab code coverage',
-        namedParams: {
-          user: 'gitlab-org',
-          repo: 'gitlab-runner',
-          branch: 'master',
-        },
-        staticPreview: this.render({ coverage: 67 }),
-        documentation,
-      },
-      {
-        title: 'Gitlab code coverage (specific job)',
-        namedParams: {
-          user: 'gitlab-org',
-          repo: 'gitlab-runner',
-          branch: 'master',
-        },
-        queryParams: { job_name: 'test coverage report' },
-        staticPreview: this.render({ coverage: 96 }),
-        documentation,
-      },
-      {
-        title: 'Gitlab code coverage (self-hosted)',
-        namedParams: { user: 'GNOME', repo: 'libhandy', branch: 'master' },
-        queryParams: { gitlab_url: 'https://gitlab.gnome.org' },
-        staticPreview: this.render({ coverage: 93 }),
-        documentation,
-      },
-      {
-        title: 'Gitlab code coverage (self-hosted, specific job)',
-        namedParams: { user: 'GNOME', repo: 'libhandy', branch: 'master' },
-        queryParams: {
-          gitlab_url: 'https://gitlab.gnome.org',
-          job_name: 'unit-test',
-        },
-        staticPreview: this.render({ coverage: 93 }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'coverage' }
-  }
+  static defaultBadgeData = { label: 'coverage' }
 
   static render({ coverage }) {
     return {
@@ -105,17 +95,11 @@ module.exports = class GitlabCoverage extends BaseSvgScrapingService {
     }
   }
 
-  async fetch({
-    user,
-    repo,
-    branch,
-    gitlab_url: baseUrl = 'https://gitlab.com',
-    job_name,
-  }) {
+  async fetch({ user, repo, branch, baseUrl = 'https://gitlab.com', jobName }) {
     // Since the URL doesn't return a usable value when an invalid job name is specified,
     // it is recommended to not use the query param at all if not required
-    job_name = job_name ? `?job=${job_name}` : ''
-    const url = `${baseUrl}/${user}/${repo}/badges/${branch}/coverage.svg${job_name}`
+    jobName = jobName ? `?job=${jobName}` : ''
+    const url = `${baseUrl}/${user}/${repo}/badges/${branch}/coverage.svg${jobName}`
     const errorMessages = {
       401: 'repo not found',
       404: 'repo not found',
@@ -134,13 +118,16 @@ module.exports = class GitlabCoverage extends BaseSvgScrapingService {
     return Number(coverage.slice(0, -1))
   }
 
-  async handle({ user, repo, branch }, { gitlab_url, job_name }) {
+  async handle(
+    { user, repo, branch },
+    { gitlab_url: baseUrl, job_name: jobName }
+  ) {
     const { message: coverage } = await this.fetch({
       user,
       repo,
       branch,
-      gitlab_url,
-      job_name,
+      baseUrl,
+      jobName,
     })
     return this.constructor.render({
       coverage: this.constructor.transform({ coverage }),

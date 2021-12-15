@@ -1,83 +1,93 @@
-'use strict'
-
-const { addv } = require('../text-formatters')
-const { version: versionColor } = require('../color-formatters')
-const { redirector } = require('..')
-const { GithubAuthV3Service } = require('./github-auth-service')
-const {
+import Joi from 'joi'
+import { addv } from '../text-formatters.js'
+import { version as versionColor } from '../color-formatters.js'
+import { redirector } from '../index.js'
+import { GithubAuthV3Service } from './github-auth-service.js'
+import {
   fetchLatestRelease,
   queryParamSchema,
-} = require('./github-common-release')
-const { documentation } = require('./github-helpers')
+} from './github-common-release.js'
+import { documentation } from './github-helpers.js'
+
+const extendedQueryParamSchema = Joi.object({
+  display_name: Joi.string().valid('tag', 'release').default('tag'),
+})
 
 class GithubRelease extends GithubAuthV3Service {
-  static get category() {
-    return 'version'
+  static category = 'version'
+  static route = {
+    base: 'github/v/release',
+    pattern: ':user/:repo',
+    queryParamSchema: queryParamSchema.concat(extendedQueryParamSchema),
   }
 
-  static get route() {
-    return {
-      base: 'github/v/release',
-      pattern: ':user/:repo',
-      queryParamSchema,
-    }
-  }
+  static examples = [
+    {
+      title: 'GitHub release (latest by date)',
+      namedParams: { user: 'expressjs', repo: 'express' },
+      queryParams: { display_name: 'tag' },
+      staticPreview: this.render({
+        version: 'v4.16.4',
+        sort: 'date',
+        isPrerelease: false,
+      }),
+      documentation,
+    },
+    {
+      title: 'GitHub release (latest by date including pre-releases)',
+      namedParams: { user: 'expressjs', repo: 'express' },
+      queryParams: { include_prereleases: null, display_name: 'tag' },
+      staticPreview: this.render({
+        version: 'v5.0.0-alpha.7',
+        sort: 'date',
+        isPrerelease: true,
+      }),
+      documentation,
+    },
+    {
+      title: 'GitHub release (latest SemVer)',
+      namedParams: { user: 'expressjs', repo: 'express' },
+      queryParams: { sort: 'semver', display_name: 'tag' },
+      staticPreview: this.render({
+        version: 'v4.16.4',
+        sort: 'semver',
+        isPrerelease: false,
+      }),
+      documentation,
+    },
+    {
+      title: 'GitHub release (latest SemVer including pre-releases)',
+      namedParams: { user: 'expressjs', repo: 'express' },
+      queryParams: {
+        sort: 'semver',
+        include_prereleases: null,
+        display_name: 'tag',
+      },
+      staticPreview: this.render({
+        version: 'v5.0.0-alpha.7',
+        sort: 'semver',
+        isPrerelease: true,
+      }),
+      documentation,
+    },
+    {
+      title: 'GitHub release (release name instead of tag name)',
+      namedParams: { user: 'gooddata', repo: 'gooddata-java' },
+      queryParams: {
+        sort: 'date',
+        include_prereleases: null,
+        display_name: 'release',
+      },
+      staticPreview: this.render({
+        version: '3.7.0+api3',
+        sort: 'date',
+        isPrerelease: true,
+      }),
+      documentation,
+    },
+  ]
 
-  static get examples() {
-    return [
-      {
-        title: 'GitHub release (latest by date)',
-        namedParams: { user: 'expressjs', repo: 'express' },
-        queryParams: {},
-        staticPreview: this.render({
-          version: 'v4.16.4',
-          sort: 'date',
-          isPrerelease: false,
-        }),
-        documentation,
-      },
-      {
-        title: 'GitHub release (latest by date including pre-releases)',
-        namedParams: { user: 'expressjs', repo: 'express' },
-        queryParams: { include_prereleases: null },
-        staticPreview: this.render({
-          version: 'v5.0.0-alpha.7',
-          sort: 'date',
-          isPrerelease: true,
-        }),
-        documentation,
-      },
-      {
-        title: 'GitHub release (latest SemVer)',
-        namedParams: { user: 'expressjs', repo: 'express' },
-        queryParams: { sort: 'semver' },
-        staticPreview: this.render({
-          version: 'v4.16.4',
-          sort: 'semver',
-          isPrerelease: false,
-        }),
-        documentation,
-      },
-      {
-        title: 'GitHub release (latest SemVer including pre-releases)',
-        namedParams: { user: 'expressjs', repo: 'express' },
-        queryParams: { sort: 'semver', include_prereleases: null },
-        staticPreview: this.render({
-          version: 'v5.0.0-alpha.7',
-          sort: 'semver',
-          isPrerelease: true,
-        }),
-        documentation,
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return {
-      label: 'release',
-      namedLogo: 'github',
-    }
-  }
+  static defaultBadgeData = { label: 'release', namedLogo: 'github' }
 
   static render({ version, sort, isPrerelease }) {
     let color = 'blue'
@@ -86,16 +96,29 @@ class GithubRelease extends GithubAuthV3Service {
     return { message: addv(version), color }
   }
 
+  static transform(latestRelease, display) {
+    const { name, tag_name: tagName, prerelease: isPrerelease } = latestRelease
+    if (display === 'tag') {
+      return { isPrerelease, version: tagName }
+    }
+
+    return { version: name || tagName, isPrerelease }
+  }
+
   async handle({ user, repo }, queryParams) {
     const latestRelease = await fetchLatestRelease(
       this,
       { user, repo },
       queryParams
     )
+    const { version, isPrerelease } = this.constructor.transform(
+      latestRelease,
+      queryParams.display_name
+    )
     return this.constructor.render({
-      version: latestRelease.tag_name,
+      version,
       sort: queryParams.sort,
-      isPrerelease: latestRelease.prerelease,
+      isPrerelease,
     })
   }
 }
@@ -134,7 +157,4 @@ const redirects = {
   }),
 }
 
-module.exports = {
-  GithubRelease,
-  ...redirects,
-}
+export { GithubRelease, redirects }

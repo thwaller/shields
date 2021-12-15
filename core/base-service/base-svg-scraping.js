@@ -2,13 +2,11 @@
  * @module
  */
 
-'use strict'
-
 // See available emoji at http://emoji.muan.co/
-const emojic = require('emojic')
-const BaseService = require('./base')
-const trace = require('./trace')
-const { InvalidResponse } = require('./errors')
+import emojic from 'emojic'
+import BaseService from './base.js'
+import trace from './trace.js'
+import { InvalidResponse } from './errors.js'
 
 const defaultValueMatcher = />([^<>]+)<\/text><\/g>/
 const leadingWhitespace = /(?:\r\n\s*|\r\s*|\n\s*)/g
@@ -53,14 +51,14 @@ class BaseSvgScrapingService extends BaseService {
    * @param {RegExp} attrs.valueMatcher
    *    RegExp to match the value we want to parse from the SVG
    * @param {string} attrs.url URL to request
-   * @param {object} [attrs.options={}] Options to pass to request. See
-   *    [documentation](https://github.com/request/request#requestoptions-callback)
+   * @param {object} [attrs.options={}] Options to pass to got. See
+   *    [documentation](https://github.com/sindresorhus/got/blob/main/documentation/2-options.md)
    * @param {object} [attrs.errorMessages={}] Key-value map of status codes
    *    and custom error messages e.g: `{ 404: 'package not found' }`.
    *    This can be used to extend or override the
    *    [default](https://github.com/badges/shields/blob/master/core/base-service/check-error-response.js#L5)
    * @returns {object} Parsed response
-   * @see https://github.com/request/request#requestoptions-callback
+   * @see https://github.com/sindresorhus/got/blob/main/documentation/2-options.md
    */
   async _requestSvg({
     schema,
@@ -90,4 +88,4 @@ class BaseSvgScrapingService extends BaseService {
   }
 }
 
-module.exports = BaseSvgScrapingService
+export default BaseSvgScrapingService

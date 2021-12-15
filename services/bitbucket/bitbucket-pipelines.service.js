@@ -1,8 +1,6 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { renderBuildStatusBadge } = require('../build-status')
-const { BaseJsonService, redirector } = require('..')
+import Joi from 'joi'
+import { renderBuildStatusBadge } from '../build-status.js'
+import { BaseJsonService, redirector } from '../index.js'
 
 const bitbucketPipelinesSchema = Joi.object({
   values: Joi.array()
@@ -56,7 +54,7 @@ class BitbucketPipelines extends BaseJsonService {
       url,
       schema: bitbucketPipelinesSchema,
       options: {
-        qs: {
+        searchParams: {
           fields: 'values.state',
           page: 1,
           pagelen: 2,
@@ -96,7 +94,4 @@ const BitbucketPipelinesRedirector = redirector({
   dateAdded: new Date('2020-07-12'),
 })
 
-module.exports = {
-  BitbucketPipelines,
-  BitbucketPipelinesRedirector,
-}
+export { BitbucketPipelines, BitbucketPipelinesRedirector }

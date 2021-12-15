@@ -1,9 +1,8 @@
-'use strict'
+import { renderVersionBadge } from '../version.js'
+import { NotFound } from '../index.js'
+import BaseChromeWebStoreService from './chrome-web-store-base.js'
 
-const { renderVersionBadge } = require('../version')
-const BaseChromeWebStoreService = require('./chrome-web-store-base')
-
-module.exports = class ChromeWebStoreVersion extends BaseChromeWebStoreService {
+export default class ChromeWebStoreVersion extends BaseChromeWebStoreService {
   static category = 'version'
   static route = { base: 'chrome-web-store/v', pattern: ':storeId' }
 
@@ -18,7 +17,11 @@ module.exports = class ChromeWebStoreVersion extends BaseChromeWebStoreService {
   static defaultBadgeData = { label: 'chrome web store' }
 
   async handle({ storeId }) {
-    const data = await this.fetch({ storeId })
-    return renderVersionBadge({ version: data.version })
+    const chromeWebStore = await this.fetch({ storeId })
+    const version = chromeWebStore.version()
+    if (version == null) {
+      throw new NotFound({ prettyMessage: 'not found' })
+    }
+    return renderVersionBadge({ version })
   }
 }

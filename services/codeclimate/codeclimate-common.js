@@ -1,7 +1,5 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { NotFound } = require('..')
+import Joi from 'joi'
+import { NotFound } from '../index.js'
 
 const keywords = ['codeclimate']
 
@@ -36,7 +34,7 @@ async function fetchRepo(serviceInstance, { user, repo }) {
   } = await serviceInstance._requestJson({
     schema: repoSchema,
     url: 'https://api.codeclimate.com/v1/repos',
-    options: { qs: { github_slug: `${user}/${repo}` } },
+    options: { searchParams: { github_slug: `${user}/${repo}` } },
   })
   if (repoInfo === undefined) {
     throw new NotFound({ prettyMessage: 'repo not found' })
@@ -44,8 +42,4 @@ async function fetchRepo(serviceInstance, { user, repo }) {
   return repoInfo
 }
 
-module.exports = {
-  keywords,
-  isLetterGrade,
-  fetchRepo,
-}
+export { keywords, isLetterGrade, fetchRepo }

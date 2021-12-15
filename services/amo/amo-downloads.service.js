@@ -1,9 +1,6 @@
-'use strict'
-
-const { metric } = require('../text-formatters')
-const { downloadCount } = require('../color-formatters')
-const { redirector } = require('..')
-const { BaseAmoService, keywords } = require('./amo-base')
+import { renderDownloadsBadge } from '../downloads.js'
+import { redirector } from '../index.js'
+import { BaseAmoService, keywords } from './amo-base.js'
 
 const documentation = `
 <p>
@@ -30,10 +27,7 @@ class AmoWeeklyDownloads extends BaseAmoService {
   static defaultBadgeData = { label: 'downloads' }
 
   static render({ downloads }) {
-    return {
-      message: `${metric(downloads)}/week`,
-      color: downloadCount(downloads),
-    }
+    return renderDownloadsBadge({ downloads, interval: 'week' })
   }
 
   async handle({ addonId }) {
@@ -54,7 +48,4 @@ const AmoLegacyRedirect = redirector({
   dateAdded: new Date('2019-02-23'),
 })
 
-module.exports = {
-  AmoWeeklyDownloads,
-  AmoLegacyRedirect,
-}
+export { AmoWeeklyDownloads, AmoLegacyRedirect }

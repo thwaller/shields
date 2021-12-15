@@ -1,9 +1,7 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const prettyBytes = require('pretty-bytes')
-const { nonNegativeInteger } = require('../validators')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import prettyBytes from 'pretty-bytes'
+import { nonNegativeInteger } from '../validators.js'
+import { BaseJsonService } from '../index.js'
 
 const schema = Joi.object({
   size: nonNegativeInteger,
@@ -12,7 +10,7 @@ const schema = Joi.object({
 
 const keywords = ['node', 'bundlephobia']
 
-module.exports = class Bundlephobia extends BaseJsonService {
+export default class Bundlephobia extends BaseJsonService {
   static category = 'size'
 
   static route = {
@@ -81,7 +79,7 @@ module.exports = class Bundlephobia extends BaseJsonService {
     const packageQuery = `${scope ? `${scope}/` : ''}${packageName}${
       version ? `@${version}` : ''
     }`
-    const options = { qs: { package: packageQuery } }
+    const options = { searchParams: { package: packageQuery } }
     return this._requestJson({
       schema,
       url: 'https://bundlephobia.com/api/size',

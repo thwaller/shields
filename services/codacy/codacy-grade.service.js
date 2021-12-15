@@ -1,12 +1,10 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { BaseSvgScrapingService } = require('..')
-const { codacyGrade } = require('./codacy-helpers')
+import Joi from 'joi'
+import { BaseSvgScrapingService } from '../index.js'
+import { codacyGrade } from './codacy-helpers.js'
 
 const schema = Joi.object({ message: codacyGrade }).required()
 
-module.exports = class CodacyGrade extends BaseSvgScrapingService {
+export default class CodacyGrade extends BaseSvgScrapingService {
   static category = 'analysis'
   static route = { base: 'codacy/grade', pattern: ':projectId/:branch*' }
 
@@ -14,14 +12,14 @@ module.exports = class CodacyGrade extends BaseSvgScrapingService {
     {
       title: 'Codacy grade',
       pattern: ':projectId',
-      namedParams: { projectId: 'e27821fb6289410b8f58338c7e0bc686' },
+      namedParams: { projectId: '0cb32ce695b743d68257021455330c66' },
       staticPreview: this.render({ grade: 'A' }),
     },
     {
       title: 'Codacy branch grade',
       pattern: ':projectId/:branch',
       namedParams: {
-        projectId: 'e27821fb6289410b8f58338c7e0bc686',
+        projectId: '0cb32ce695b743d68257021455330c66',
         branch: 'master',
       },
       staticPreview: this.render({ grade: 'A' }),
@@ -52,7 +50,7 @@ module.exports = class CodacyGrade extends BaseSvgScrapingService {
       url: `https://api.codacy.com/project/badge/grade/${encodeURIComponent(
         projectId
       )}`,
-      options: { qs: { branch } },
+      options: { searchParams: { branch } },
       errorMessages: { 404: 'project or branch not found' },
       valueMatcher: /visibility="hidden">([^<>]+)<\/text>/,
     })

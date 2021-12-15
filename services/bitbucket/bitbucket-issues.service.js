@@ -1,9 +1,7 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { metric } = require('../text-formatters')
-const { nonNegativeInteger } = require('../validators')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { metric } from '../text-formatters.js'
+import { nonNegativeInteger } from '../validators.js'
+import { BaseJsonService } from '../index.js'
 
 const bitbucketIssuesSchema = Joi.object({
   size: nonNegativeInteger,
@@ -46,7 +44,7 @@ function issueClassGenerator(raw) {
         schema: bitbucketIssuesSchema,
         // https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering#query-issues
         options: {
-          qs: { limit: 0, q: '(state = "new" OR state = "open")' },
+          searchParams: { limit: 0, q: '(state = "new" OR state = "open")' },
         },
         errorMessages: { 403: 'private repo' },
       })
@@ -59,4 +57,5 @@ function issueClassGenerator(raw) {
   }
 }
 
-module.exports = [true, false].map(issueClassGenerator)
+export const BitbucketRawIssues = issueClassGenerator(true)
+export const BitbucketNonRawIssues = issueClassGenerator(false)

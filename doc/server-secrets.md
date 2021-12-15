@@ -80,14 +80,6 @@ An Azure DevOps Token (PAT) is required for accessing [private Azure DevOps proj
 [ado personal access tokens]: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=vsts#create-personal-access-tokens-to-authenticate-access
 [ado token scopes]: https://docs.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth?view=vsts#scopes
 
-### Bintray
-
-- `BINTRAY_USER` (yml: `private.bintray_user`)
-- `BINTRAY_API_KEY` (yml: `private.bintray_apikey`)
-
-The bintray API [requires authentication](https://bintray.com/docs/api/#_authentication)
-Create an account and obtain a token from the user profile page.
-
 ### Bitbucket (Cloud)
 
 - `BITBUCKET_USER` (yml: `private.bitbucket_username`)
@@ -129,12 +121,12 @@ Drone instance and obtain a token from the user profile page.
 - `GITHUB_URL` (yml: `public.services.github.baseUri`)
 - `GH_TOKEN` (yml: `private.gh_token`)
 
-Because of Github rate limits, you will need to provide a token, or else badges
+Because of GitHub rate limits, you will need to provide a token, or else badges
 will stop working once you hit 60 requests per hour, the
 [unauthenticated rate limit][github rate limit].
 
 You can [create a personal access token][personal access tokens] through the
-Github website. When you create the token, you can choose to give read access
+GitHub website. When you create the token, you can choose to give read access
 to your repositories. If you do that, your self-hosted Shields installation
 will have access to your private repositories.
 
@@ -155,6 +147,15 @@ These settings are used by shields.io for GitHub OAuth app authorization
 but will not be necessary for most self-hosted installations. See
 [production-hosting.md](./production-hosting.md).
 
+### GitLab
+
+- `GITLAB_ORIGINS` (yml: `public.services.gitlab.authorizedOrigins`)
+- `GITLAB_TOKEN` (yml: `private.gitlab_token`)
+
+A GitLab [Personal Access Token][gitlab-pat] is required for accessing private content. If you need a GitLab token for your self-hosted Shields server then we recommend limiting the scopes to the minimal set necessary for the badges you are using.
+
+[gitlab-pat]: https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html
+
 ### Jenkins CI
 
 - `JENKINS_ORIGINS` (yml: `public.services.jenkins.authorizedOrigins`)
@@ -172,6 +173,24 @@ access to a private Jenkins CI instance.
 
 Provide a username and password to give your self-hosted Shields installation
 access to a private JIRA instance.
+
+### Libraries.io/Bower
+
+- `LIBRARIESIO_TOKENS` (yml: `private.librariesio_tokens`)
+
+Note that the Bower badges utilize the Libraries.io API, so use this secret for both Libraries.io badges and/or Bower badges.
+
+Just like the `*_ORIGINS` type secrets, this value can accept a single token as a string, or a group of tokens provided as an array of strings. For example:
+
+```yaml
+private:
+  librariesio_tokens: my-token
+## Or
+private:
+  librariesio_tokens: [my-token some-other-token]
+```
+
+When using the environment variable with multiple tokens, be sure to use a space to separate the tokens, e.g. `LIBRARIESIO_TOKENS="my-token some-other-token"`
 
 ### Nexus
 
@@ -191,6 +210,21 @@ access to your private nexus repositories.
 installation access to private npm packages
 
 [npm token]: https://docs.npmjs.com/getting-started/working_with_tokens
+
+## Open Build Service
+
+- `OBS_USER` (yml: `private.obs_user`)
+- `OBS_PASS` (yml: `private.obs_user`)
+
+Only authenticated users are allowed to access the Open Build Service API.
+Authentication is done by sending a Basic HTTP Authorisation header. A user
+account for the [reference instance](https://build.opensuse.org) is a SUSE
+IdP account, which can be created [here](https://idp-portal.suse.com/univention/self-service/#page=createaccount).
+
+While OBS supports [API tokens](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.authorization.token.html#id-1.5.10.16.4),
+they can only be scoped to execute specific actions on a POST request. This
+means however, that an actual account is required to read the build status
+of a package.
 
 ### SymfonyInsight (formerly Sensiolabs)
 
@@ -226,6 +260,21 @@ access to your private nexus repositories.
 
 Register an application in the [Twitch developer console](https://dev.twitch.tv/console)
 in order to obtain a client id and a client secret for making Twitch API calls.
+
+### Weblate
+
+- `WEBLATE_ORIGINS` (yml: `public.services.weblate.authorizedOrigins`)
+- `WEBLATE_API_KEY` (yml: `private.weblate_api_key`)
+
+By default Weblate throttles [unauthenticated request][weblate authentication]
+to only 100 requests per day, after this you will need an API key or else
+badges will stop working.
+
+You can find your Weblate API key in your profile under
+["API access"][weblate api key location].
+
+[weblate authentication]: https://docs.weblate.org/en/latest/api.html#authentication-and-generic-parameters
+[weblate api key location]: https://hosted.weblate.org/accounts/profile/#api
 
 ### Wheelmap
 

@@ -1,50 +1,39 @@
-'use strict'
-
-const { metric } = require('../text-formatters')
-const { BaseJsonService } = require('..')
-const { fetchProject } = require('./librariesio-common')
+import { metric } from '../text-formatters.js'
+import LibrariesIoBase from './librariesio-base.js'
 
 // https://libraries.io/api#project-dependents
-module.exports = class LibrariesIoDependents extends BaseJsonService {
-  static get category() {
-    return 'other'
+export default class LibrariesIoDependents extends LibrariesIoBase {
+  static category = 'other'
+
+  static route = {
+    base: 'librariesio/dependents',
+    pattern: ':platform/:scope(@[^/]+)?/:packageName',
   }
 
-  static get route() {
-    return {
-      base: 'librariesio/dependents',
-      pattern: ':platform/:scope(@[^/]+)?/:packageName',
-    }
-  }
-
-  static get examples() {
-    return [
-      {
-        title: 'Dependents (via libraries.io)',
-        pattern: ':platform/:packageName',
-        namedParams: {
-          platform: 'npm',
-          packageName: 'got',
-        },
-        staticPreview: this.render({ dependentCount: 2000 }),
+  static examples = [
+    {
+      title: 'Dependents (via libraries.io)',
+      pattern: ':platform/:packageName',
+      namedParams: {
+        platform: 'npm',
+        packageName: 'got',
       },
-      {
-        title: 'Dependents (via libraries.io), scoped npm package',
-        pattern: ':platform/:scope/:packageName',
-        namedParams: {
-          platform: 'npm',
-          scope: '@babel',
-          packageName: 'core',
-        },
-        staticPreview: this.render({ dependentCount: 94 }),
+      staticPreview: this.render({ dependentCount: 2000 }),
+    },
+    {
+      title: 'Dependents (via libraries.io), scoped npm package',
+      pattern: ':platform/:scope/:packageName',
+      namedParams: {
+        platform: 'npm',
+        scope: '@babel',
+        packageName: 'core',
       },
-    ]
-  }
+      staticPreview: this.render({ dependentCount: 94 }),
+    },
+  ]
 
-  static get defaultBadgeData() {
-    return {
-      label: 'dependents',
-    }
+  static defaultBadgeData = {
+    label: 'dependents',
   }
 
   static render({ dependentCount }) {
@@ -55,7 +44,7 @@ module.exports = class LibrariesIoDependents extends BaseJsonService {
   }
 
   async handle({ platform, scope, packageName }) {
-    const { dependents_count: dependentCount } = await fetchProject(this, {
+    const { dependents_count: dependentCount } = await this.fetchProject({
       platform,
       scope,
       packageName,

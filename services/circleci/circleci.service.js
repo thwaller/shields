@@ -1,8 +1,6 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { isBuildStatus, renderBuildStatusBadge } = require('../build-status')
-const { BaseSvgScrapingService, redirector } = require('..')
+import Joi from 'joi'
+import { isBuildStatus, renderBuildStatusBadge } from '../build-status.js'
+import { BaseSvgScrapingService, redirector } from '../index.js'
 
 const circleSchema = Joi.object({ message: isBuildStatus }).required()
 const queryParamSchema = Joi.object({ token: Joi.string() }).required()
@@ -58,7 +56,7 @@ class CircleCi extends BaseSvgScrapingService {
       url: `https://circleci.com/${vcs}/${user}/${repo}${branchClause}.svg`,
       // Note that the unusual 'circle-token' query param name is required.
       // https://circleci.com/docs/api/#get-authenticated
-      options: { qs: { style: 'shield', 'circle-token': token } },
+      options: { searchParams: { style: 'shield', 'circle-token': token } },
       errorMessages: { 404: 'project not found' },
     })
     return this.constructor.render({ status: message })
@@ -98,4 +96,4 @@ const legacyRoutes = [
   }),
 ]
 
-module.exports = [...legacyRoutes, CircleCi]
+export default { ...legacyRoutes, CircleCi }

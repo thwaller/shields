@@ -1,9 +1,7 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { metric } = require('../text-formatters')
-const { nonNegativeInteger } = require('../validators')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { renderDownloadsBadge } from '../downloads.js'
+import { nonNegativeInteger } from '../validators.js'
+import { BaseJsonService } from '../index.js'
 
 // https://github.com/npm/registry/blob/master/docs/download-counts.md#output
 const pointResponseSchema = Joi.object({
@@ -15,19 +13,19 @@ const intervalMap = {
     query: 'point/last-week',
     schema: pointResponseSchema,
     transform: json => json.downloads,
-    messageSuffix: '/week',
+    interval: 'week',
   },
   dm: {
     query: 'point/last-month',
     schema: pointResponseSchema,
     transform: json => json.downloads,
-    messageSuffix: '/month',
+    interval: 'month',
   },
   dy: {
     query: 'point/last-year',
     schema: pointResponseSchema,
     transform: json => json.downloads,
-    messageSuffix: '/year',
+    interval: 'year',
   },
   dt: {
     query: 'range/1000-01-01:3000-01-01',
@@ -39,47 +37,37 @@ const intervalMap = {
       json.downloads
         .map(item => item.downloads)
         .reduce((accum, current) => accum + current),
-    messageSuffix: '',
   },
 }
 
 // This hits an entirely different API from the rest of the NPM services, so
 // it does not use NpmBase.
-module.exports = class NpmDownloads extends BaseJsonService {
-  static get category() {
-    return 'downloads'
+export default class NpmDownloads extends BaseJsonService {
+  static category = 'downloads'
+
+  static route = {
+    base: 'npm',
+    pattern: ':interval(dw|dm|dy|dt)/:scope(@.+)?/:packageName',
   }
 
-  static get route() {
-    return {
-      base: 'npm',
-      pattern: ':interval(dw|dm|dy|dt)/:scope(@.+)?/:packageName',
-    }
-  }
-
-  static get examples() {
-    return [
-      {
-        title: 'npm',
-        namedParams: { interval: 'dw', packageName: 'localeval' },
-        staticPreview: this.render({ interval: 'dw', downloadCount: 30000 }),
-        keywords: ['node'],
-      },
-    ]
-  }
+  static examples = [
+    {
+      title: 'npm',
+      namedParams: { interval: 'dw', packageName: 'localeval' },
+      staticPreview: this.render({ interval: 'dw', downloadCount: 30000 }),
+      keywords: ['node'],
+    },
+  ]
 
   // For testing.
-  static get _intervalMap() {
-    return intervalMap
-  }
+  static _intervalMap = intervalMap
 
-  static render({ interval, downloadCount }) {
-    const { messageSuffix } = intervalMap[interval]
-
-    return {
-      message: `${metric(downloadCount)}${messageSuffix}`,
-      color: downloadCount > 0 ? 'brightgreen' : 'red',
-    }
+  static render({ interval, downloadCount: downloads }) {
+    return renderDownloadsBadge({
+      downloads,
+      interval: intervalMap[interval].interval,
+      colorOverride: downloads > 0 ? 'brightgreen' : 'red',
+    })
   }
 
   async handle({ interval, scope, packageName }) {

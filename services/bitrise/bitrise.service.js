@@ -1,7 +1,5 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { BaseJsonService } from '../index.js'
 
 // https://devcenter.bitrise.io/api/app-status-badge/
 const schema = Joi.object({
@@ -12,7 +10,7 @@ const queryParamSchema = Joi.object({
   token: Joi.string().required(),
 }).required()
 
-module.exports = class Bitrise extends BaseJsonService {
+export default class Bitrise extends BaseJsonService {
   static category = 'build'
   static route = {
     base: 'bitrise',
@@ -55,7 +53,7 @@ module.exports = class Bitrise extends BaseJsonService {
       url: `https://app.bitrise.io/app/${encodeURIComponent(
         appId
       )}/status.json`,
-      options: { qs: { token, branch } },
+      options: { searchParams: { token, branch } },
       schema,
       errorMessages: {
         403: 'app not found or invalid token',

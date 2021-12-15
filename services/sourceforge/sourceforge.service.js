@@ -1,11 +1,8 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const moment = require('moment')
-const { metric } = require('../text-formatters')
-const { downloadCount } = require('../color-formatters')
-const { nonNegativeInteger } = require('../validators')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import moment from 'moment'
+import { renderDownloadsBadge } from '../downloads.js'
+import { nonNegativeInteger } from '../validators.js'
+import { BaseJsonService } from '../index.js'
 
 const schema = Joi.object({
   total: nonNegativeInteger,
@@ -14,75 +11,66 @@ const schema = Joi.object({
 const intervalMap = {
   dd: {
     startDate: endDate => endDate,
-    suffix: '/day',
+    interval: 'day',
   },
   dw: {
     // 6 days, since date range is inclusive,
     startDate: endDate => moment(endDate).subtract(6, 'days'),
-    suffix: '/week',
+    interval: 'week',
   },
   dm: {
     startDate: endDate => moment(endDate).subtract(30, 'days'),
-    suffix: '/month',
+    interval: 'month',
   },
   dt: {
     startDate: () => moment(0),
-    suffix: '',
   },
 }
 
-module.exports = class Sourceforge extends BaseJsonService {
-  static get category() {
-    return 'downloads'
+export default class Sourceforge extends BaseJsonService {
+  static category = 'downloads'
+
+  static route = {
+    base: 'sourceforge',
+    pattern: ':interval(dt|dm|dw|dd)/:project/:folder*',
   }
 
-  static get route() {
-    return {
-      base: 'sourceforge',
-      pattern: ':interval(dt|dm|dw|dd)/:project/:folder*',
-    }
-  }
-
-  static get examples() {
-    return [
-      {
-        title: 'SourceForge',
-        pattern: ':interval(dt|dm|dw|dd)/:project',
-        namedParams: {
-          interval: 'dm',
-          project: 'sevenzip',
-        },
-        staticPreview: this.render({
-          downloads: 215990,
-          interval: 'dm',
-        }),
+  static examples = [
+    {
+      title: 'SourceForge',
+      pattern: ':interval(dt|dm|dw|dd)/:project',
+      namedParams: {
+        interval: 'dm',
+        project: 'sevenzip',
       },
-      {
-        title: 'SourceForge',
-        pattern: ':interval(dt|dm|dw|dd)/:project/:folder',
-        namedParams: {
-          interval: 'dm',
-          project: 'arianne',
-          folder: 'stendhal',
-        },
-        staticPreview: this.render({
-          downloads: 550,
-          interval: 'dm',
-        }),
+      staticPreview: this.render({
+        downloads: 215990,
+        interval: 'dm',
+      }),
+    },
+    {
+      title: 'SourceForge',
+      pattern: ':interval(dt|dm|dw|dd)/:project/:folder',
+      namedParams: {
+        interval: 'dm',
+        project: 'arianne',
+        folder: 'stendhal',
       },
-    ]
-  }
+      staticPreview: this.render({
+        downloads: 550,
+        interval: 'dm',
+      }),
+    },
+  ]
 
-  static get defaultBadgeData() {
-    return { label: 'sourceforge' }
-  }
+  static defaultBadgeData = { label: 'sourceforge' }
 
   static render({ downloads, interval }) {
-    return {
-      label: 'downloads',
-      message: `${metric(downloads)}${intervalMap[interval].suffix}`,
-      color: downloadCount(downloads),
-    }
+    return renderDownloadsBadge({
+      downloads,
+      labelOverride: 'downloads',
+      interval: intervalMap[interval].interval,
+    })
   }
 
   async fetch({ interval, project, folder }) {
@@ -93,7 +81,7 @@ module.exports = class Sourceforge extends BaseJsonService {
     const endDate = moment().subtract(24, 'hours')
     const startDate = intervalMap[interval].startDate(endDate)
     const options = {
-      qs: {
+      searchParams: {
         start_date: startDate.format('YYYY-MM-DD'),
         end_date: endDate.format('YYYY-MM-DD'),
       },
@@ -110,7 +98,7 @@ module.exports = class Sourceforge extends BaseJsonService {
   }
 
   async handle({ interval, project, folder }) {
-    const json = await this.fetch({ interval, project, folder })
-    return this.constructor.render({ interval, downloads: json.total })
+    const { total: downloads } = await this.fetch({ interval, project, folder })
+    return this.constructor.render({ interval, downloads })
   }
 }

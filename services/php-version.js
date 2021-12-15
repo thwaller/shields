@@ -3,13 +3,10 @@
  * using the algorithm followed by Composer (see
  * https://getcomposer.org/doc/04-schema.md#version).
  */
-'use strict'
-
-const { promisify } = require('util')
-const request = require('request')
-const { regularUpdate } = require('../core/legacy/regular-update')
-const { listCompare } = require('./version')
-const { omitv } = require('./text-formatters')
+import { fetch } from '../core/base-service/got.js'
+import { getCachedResource } from '../core/base-service/resource-cache.js'
+import { listCompare } from './version.js'
+import { omitv } from './text-formatters.js'
 
 // Return a negative value if v1 < v2,
 // zero if v1 = v2, a positive value otherwise.
@@ -220,9 +217,8 @@ function versionReduction(versions, phpReleases) {
 }
 
 async function getPhpReleases(githubApiProvider) {
-  return promisify(regularUpdate)({
+  return getCachedResource({
     url: '/repos/php/php-src/git/refs/tags',
-    intervalMillis: 24 * 3600 * 1000, // 1 day
     scraper: tags =>
       Array.from(
         new Set(
@@ -235,12 +231,11 @@ async function getPhpReleases(githubApiProvider) {
             .map(tag => tag.ref.match(/^refs\/tags\/php-(\d+\.\d+)\.\d+$/)[1])
         )
       ),
-    request: (url, options, cb) =>
-      githubApiProvider.request(request, url, {}, cb),
+    requestFetcher: githubApiProvider.fetch.bind(githubApiProvider, fetch),
   })
 }
 
-module.exports = {
+export {
   compare,
   latest,
   isStable,

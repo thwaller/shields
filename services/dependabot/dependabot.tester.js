@@ -1,29 +1,13 @@
-'use strict'
+import { ServiceTester } from '../tester.js'
 
-const { isIntegerPercentage } = require('../test-validators')
-const t = (module.exports = require('../tester').createServiceTester())
+export const t = new ServiceTester({
+  id: 'dependabot',
+  title: 'Dependabot',
+})
 
-t.create('semver stability (valid)')
-  .get('/bundler/puma.json')
+t.create('no longer available (previously semver stability)')
+  .get('/semver/bundler/puma.json')
   .expectBadge({
-    label: 'semver stability',
-    message: isIntegerPercentage,
-    link: [
-      'https://dependabot.com/compatibility-score.html?package-manager=bundler&dependency-name=puma&version-scheme=semver',
-    ],
-  })
-
-t.create('semver stability (invalid error)')
-  .get('/invalid-manager/puma.json')
-  .expectBadge({
-    label: 'semver stability',
-    message: 'invalid',
-    color: 'lightgrey',
-  })
-
-t.create('semver stability (missing dependency)')
-  .get('/bundler/some-random-missing-dependency.json')
-  .expectBadge({
-    label: 'semver stability',
-    message: 'unknown',
+    label: 'dependabot',
+    message: 'no longer available',
   })

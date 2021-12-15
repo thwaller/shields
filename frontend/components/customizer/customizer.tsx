@@ -11,13 +11,6 @@ import {
   CopiedContentIndicatorHandle,
 } from './copied-content-indicator'
 
-function getBaseUrlFromWindowLocation(): string {
-  // Default to the current hostname for when there is no `BASE_URL` set
-  // at build time (as in most PaaS deploys).
-  const { protocol, hostname } = window.location
-  return `${protocol}//${hostname}`
-}
-
 export default function Customizer({
   baseUrl,
   title,
@@ -39,19 +32,21 @@ export default function Customizer({
 }): JSX.Element {
   // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/35572
   // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/28884#issuecomment-471341041
-  const indicatorRef = useRef<
-    CopiedContentIndicatorHandle
-  >() as React.MutableRefObject<CopiedContentIndicatorHandle>
+  const indicatorRef =
+    useRef<CopiedContentIndicatorHandle>() as React.MutableRefObject<CopiedContentIndicatorHandle>
   const [path, setPath] = useState('')
   const [queryString, setQueryString] = useState<string>()
   const [pathIsComplete, setPathIsComplete] = useState<boolean>()
   const [markup, setMarkup] = useState<string>()
   const [message, setMessage] = useState<string>()
 
-  function generateBuiltBadgeUrl(): string {
-    const suffix = queryString ? `?${queryString}` : ''
-    return `${baseUrl || getBaseUrlFromWindowLocation()}${path}${suffix}`
-  }
+  const generateBuiltBadgeUrl = React.useCallback(
+    function (): string {
+      const suffix = queryString ? `?${queryString}` : ''
+      return `${baseUrl}${path}${suffix}`
+    },
+    [baseUrl, path, queryString]
+  )
 
   function renderLivePreview(): JSX.Element {
     // There are some usability issues here. It would be better if the message
@@ -75,28 +70,31 @@ export default function Customizer({
     )
   }
 
-  async function copyMarkup(markupFormat: MarkupFormat): Promise<void> {
-    const builtBadgeUrl = generateBuiltBadgeUrl()
-    const markup = generateMarkup({
-      badgeUrl: builtBadgeUrl,
-      link,
-      title,
-      markupFormat,
-    })
+  const copyMarkup = React.useCallback(
+    async function (markupFormat: MarkupFormat): Promise<void> {
+      const builtBadgeUrl = generateBuiltBadgeUrl()
+      const markup = generateMarkup({
+        badgeUrl: builtBadgeUrl,
+        link,
+        title,
+        markupFormat,
+      })
 
-    try {
-      await clipboardCopy(markup)
-    } catch (e) {
-      setMessage('Copy failed')
+      try {
+        await clipboardCopy(markup)
+      } catch (e) {
+        setMessage('Copy failed')
+        setMarkup(markup)
+        return
+      }
+
       setMarkup(markup)
-      return
-    }
-
-    setMarkup(markup)
-    if (indicatorRef.current) {
-      indicatorRef.current.trigger()
-    }
-  }
+      if (indicatorRef.current) {
+        indicatorRef.current.trigger()
+      }
+    },
+    [generateBuiltBadgeUrl, link, title, setMessage, setMarkup]
+  )
 
   function renderMarkupAndLivePreview(): JSX.Element {
     return (
@@ -118,26 +116,32 @@ export default function Customizer({
     )
   }
 
-  function handlePathChange({
-    path,
-    isComplete,
-  }: {
-    path: string
-    isComplete: boolean
-  }): void {
-    setPath(path)
-    setPathIsComplete(isComplete)
-  }
+  const handlePathChange = React.useCallback(
+    function ({
+      path,
+      isComplete,
+    }: {
+      path: string
+      isComplete: boolean
+    }): void {
+      setPath(path)
+      setPathIsComplete(isComplete)
+    },
+    [setPath, setPathIsComplete]
+  )
 
-  function handleQueryStringChange({
-    queryString,
-    isComplete,
-  }: {
-    queryString: string
-    isComplete: boolean
-  }): void {
-    setQueryString(queryString)
-  }
+  const handleQueryStringChange = React.useCallback(
+    function ({
+      queryString,
+      isComplete,
+    }: {
+      queryString: string
+      isComplete: boolean
+    }): void {
+      setQueryString(queryString)
+    },
+    [setQueryString]
+  )
 
   return (
     <form action="">

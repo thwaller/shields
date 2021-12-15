@@ -1,11 +1,9 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { renderLicenseBadge } = require('../licenses')
-const { renderVersionBadge } = require('../version')
-const { metric } = require('../text-formatters')
-const { nonNegativeInteger } = require('../validators')
-const { BaseJsonService, InvalidResponse } = require('..')
+import Joi from 'joi'
+import { renderLicenseBadge } from '../licenses.js'
+import { renderVersionBadge } from '../version.js'
+import { renderDownloadsBadge } from '../downloads.js'
+import { nonNegativeInteger } from '../validators.js'
+import { BaseJsonService, InvalidResponse } from '../index.js'
 
 const keywords = ['atom']
 
@@ -47,7 +45,7 @@ class APMDownloads extends BaseAPMService {
   static defaultBadgeData = { label: 'downloads' }
 
   static render({ downloads }) {
-    return { message: metric(downloads), color: 'green' }
+    return renderDownloadsBadge({ downloads, colorOverride: 'green' })
   }
 
   async handle({ packageName }) {
@@ -116,8 +114,4 @@ class APMLicense extends BaseAPMService {
   }
 }
 
-module.exports = {
-  APMDownloads,
-  APMVersion,
-  APMLicense,
-}
+export { APMDownloads, APMVersion, APMLicense }

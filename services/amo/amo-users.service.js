@@ -1,9 +1,7 @@
-'use strict'
+import { renderDownloadsBadge } from '../downloads.js'
+import { BaseAmoService, keywords } from './amo-base.js'
 
-const { metric } = require('../text-formatters')
-const { BaseAmoService, keywords } = require('./amo-base')
-
-module.exports = class AmoUsers extends BaseAmoService {
+export default class AmoUsers extends BaseAmoService {
   static category = 'downloads'
   static route = { base: 'amo/users', pattern: ':addonId' }
 
@@ -18,11 +16,8 @@ module.exports = class AmoUsers extends BaseAmoService {
 
   static defaultBadgeData = { label: 'users' }
 
-  static render({ users }) {
-    return {
-      message: metric(users),
-      color: 'blue',
-    }
+  static render({ users: downloads }) {
+    return renderDownloadsBadge({ downloads, colorOverride: 'blue' })
   }
 
   async handle({ addonId }) {

@@ -1,13 +1,11 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const {
+import Joi from 'joi'
+import {
   optionalNonNegativeInteger,
   nonNegativeInteger,
-} = require('../validators')
-const { addv } = require('../text-formatters')
-const { version: versionColor } = require('../color-formatters')
-const { BaseJsonService, NotFound } = require('..')
+} from '../validators.js'
+import { addv } from '../text-formatters.js'
+import { version as versionColor } from '../color-formatters.js'
+import { BaseJsonService, NotFound } from '../index.js'
 
 const schema = Joi.object({
   packageName: Joi.string().required(),
@@ -22,40 +20,26 @@ const queryParamSchema = Joi.object({
   include_prereleases: Joi.equal(''),
 }).required()
 
-module.exports = class FDroid extends BaseJsonService {
-  static get category() {
-    return 'version'
-  }
+export default class FDroid extends BaseJsonService {
+  static category = 'version'
+  static route = { base: 'f-droid/v', pattern: ':appId', queryParamSchema }
+  static examples = [
+    {
+      title: 'F-Droid',
+      namedParams: { appId: 'org.thosp.yourlocalweather' },
+      staticPreview: this.render({ version: '1.0' }),
+      keywords: ['fdroid', 'android', 'app'],
+    },
+    {
+      title: 'F-Droid (including pre-releases)',
+      namedParams: { appId: 'org.dystopia.email' },
+      queryParams: { include_prereleases: null },
+      staticPreview: this.render({ version: '1.2.1' }),
+      keywords: ['fdroid', 'android', 'app'],
+    },
+  ]
 
-  static get route() {
-    return {
-      base: 'f-droid/v',
-      pattern: ':appId',
-      queryParamSchema,
-    }
-  }
-
-  static get examples() {
-    return [
-      {
-        title: 'F-Droid',
-        namedParams: { appId: 'org.thosp.yourlocalweather' },
-        staticPreview: this.render({ version: '1.0' }),
-        keywords: ['fdroid', 'android', 'app'],
-      },
-      {
-        title: 'F-Droid (including pre-releases)',
-        namedParams: { appId: 'org.dystopia.email' },
-        queryParams: { include_prereleases: null },
-        staticPreview: this.render({ version: '1.2.1' }),
-        keywords: ['fdroid', 'android', 'app'],
-      },
-    ]
-  }
-
-  static get defaultBadgeData() {
-    return { label: 'f-droid' }
-  }
+  static defaultBadgeData = { label: 'f-droid' }
 
   static render({ version }) {
     return {
@@ -90,9 +74,9 @@ module.exports = class FDroid extends BaseJsonService {
     return { version }
   }
 
-  async handle({ appId }, { include_prereleases }) {
+  async handle({ appId }, { include_prereleases: includePre }) {
     const json = await this.fetch({ appId })
-    const suggested = include_prereleases === undefined
+    const suggested = includePre === undefined
     const { version } = this.transform({ json, suggested })
     return this.constructor.render({ version })
   }

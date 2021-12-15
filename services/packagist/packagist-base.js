@@ -1,7 +1,5 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { BaseJsonService } from '../index.js'
 
 const packageSchema = Joi.object()
   .pattern(
@@ -101,7 +99,7 @@ const cacheDocumentationFragment = `
   </p>
   `
 
-module.exports = {
+export {
   allVersionsSchema,
   keywords,
   BasePackagistService,

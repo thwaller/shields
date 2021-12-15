@@ -1,15 +1,13 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { isBuildStatus, renderBuildStatusBadge } = require('../build-status')
-const { BaseJsonService } = require('..')
+import Joi from 'joi'
+import { isBuildStatus, renderBuildStatusBadge } from '../build-status.js'
+import { BaseJsonService } from '../index.js'
 
 // unknown is a valid 'other' status for Buildkite
 const schema = Joi.object({
   status: Joi.alternatives().try(isBuildStatus, Joi.equal('unknown')),
 }).required()
 
-module.exports = class Buildkite extends BaseJsonService {
+export default class Buildkite extends BaseJsonService {
   static category = 'build'
   static route = { base: 'buildkite', pattern: ':identifier/:branch*' }
 
@@ -37,7 +35,7 @@ module.exports = class Buildkite extends BaseJsonService {
 
   async fetch({ identifier, branch }) {
     const url = `https://badge.buildkite.com/${identifier}.json`
-    const options = { qs: { branch } }
+    const options = { searchParams: { branch } }
     return this._requestJson({
       schema,
       url,

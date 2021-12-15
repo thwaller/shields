@@ -1,8 +1,6 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { isBuildStatus, renderBuildStatusBadge } = require('../build-status')
-const { BaseSvgScrapingService } = require('..')
+import Joi from 'joi'
+import { isBuildStatus, renderBuildStatusBadge } from '../build-status.js'
+import { BaseSvgScrapingService } from '../index.js'
 
 const schema = Joi.object({
   message: Joi.alternatives()
@@ -26,7 +24,7 @@ const statusMap = {
   infrastructure_failure: 'failed',
 }
 
-module.exports = class Codeship extends BaseSvgScrapingService {
+export default class Codeship extends BaseSvgScrapingService {
   static category = 'build'
   static route = { base: 'codeship', pattern: ':projectId/:branch*' }
 
@@ -62,7 +60,7 @@ module.exports = class Codeship extends BaseSvgScrapingService {
     return this._requestSvg({
       schema,
       url,
-      options: { qs: { branch } },
+      options: { searchParams: { branch } },
       valueMatcher: /<g id="status_2">(?:[.\s\S]*)\/><\/g><g id="([\w\s]*)"/,
     })
   }

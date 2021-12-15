@@ -1,7 +1,5 @@
-'use strict'
-
-const { test, given } = require('sazerac')
-const NpmDownloads = require('./npm-downloads.service')
+import { test, given } from 'sazerac'
+import NpmDownloads from './npm-downloads.service.js'
 
 describe('NpmDownloads', function () {
   test(NpmDownloads._intervalMap.dt.transform, () => {
@@ -18,8 +16,9 @@ describe('NpmDownloads', function () {
       interval: 'dt',
       downloadCount: 0,
     }).expect({
-      message: '0',
       color: 'red',
+      message: '0',
+      label: undefined,
     })
   })
 })

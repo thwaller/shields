@@ -1,8 +1,6 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { BaseJsonService, InvalidResponse } = require('..')
-const { coveragePercentage } = require('../color-formatters')
+import Joi from 'joi'
+import { BaseJsonService, InvalidResponse } from '../index.js'
+import { coveragePercentage } from '../color-formatters.js'
 
 const keywords = [
   'l10n',
@@ -51,7 +49,7 @@ const queryParamSchema = Joi.object({
   languageCode: Joi.string().regex(/^[a-z]{2}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$/),
 }).required()
 
-module.exports = class Localizely extends BaseJsonService {
+export default class Localizely extends BaseJsonService {
   static category = 'other'
 
   static route = {
@@ -110,7 +108,7 @@ module.exports = class Localizely extends BaseJsonService {
       schema,
       url: `https://api.localizely.com/v1/projects/${projectId}/status`,
       options: {
-        qs: { branch },
+        searchParams: { branch },
         headers: { 'X-Api-Token': apiToken },
       },
       errorMessages: {

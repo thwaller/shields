@@ -1,10 +1,7 @@
-'use strict'
+import { renderDownloadsBadge } from '../downloads.js'
+import BaseCondaService from './conda-base.js'
 
-const { metric } = require('../text-formatters')
-const { downloadCount } = require('../color-formatters')
-const BaseCondaService = require('./conda-base')
-
-module.exports = class CondaDownloads extends BaseCondaService {
+export default class CondaDownloads extends BaseCondaService {
   static category = 'downloads'
   static route = { base: 'conda', pattern: ':variant(d|dn)/:channel/:pkg' }
 
@@ -18,11 +15,8 @@ module.exports = class CondaDownloads extends BaseCondaService {
   ]
 
   static render({ variant, downloads }) {
-    return {
-      label: variant === 'dn' ? 'downloads' : 'conda|downloads',
-      message: metric(downloads),
-      color: downloadCount(downloads),
-    }
+    const labelOverride = variant === 'dn' ? 'downloads' : 'conda|downloads'
+    return renderDownloadsBadge({ downloads, labelOverride })
   }
 
   async handle({ variant, channel, pkg }) {

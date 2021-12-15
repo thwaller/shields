@@ -1,36 +1,36 @@
-'use strict'
 /**
  * @module
  */
 
 // See available emoji at http://emoji.muan.co/
-const emojic = require('emojic')
-const Joi = require('@hapi/joi')
-const log = require('../server/log')
-const { AuthHelper } = require('./auth-helper')
-const { MetricHelper, MetricNames } = require('./metric-helper')
-const { assertValidCategory } = require('./categories')
-const checkErrorResponse = require('./check-error-response')
-const coalesceBadge = require('./coalesce-badge')
-const {
+import emojic from 'emojic'
+import Joi from 'joi'
+import log from '../server/log.js'
+import { AuthHelper } from './auth-helper.js'
+import { MetricHelper, MetricNames } from './metric-helper.js'
+import { assertValidCategory } from './categories.js'
+import checkErrorResponse from './check-error-response.js'
+import coalesceBadge from './coalesce-badge.js'
+import {
   NotFound,
   InvalidResponse,
   Inaccessible,
   ImproperlyConfigured,
   InvalidParameter,
   Deprecated,
-} = require('./errors')
-const { validateExample, transformExample } = require('./examples')
-const {
+} from './errors.js'
+import { validateExample, transformExample } from './examples.js'
+import { fetch } from './got.js'
+import {
   makeFullUrl,
   assertValidRoute,
   prepareRoute,
   namedParamsForMatch,
   getQueryParamNames,
-} = require('./route')
-const { assertValidServiceDefinition } = require('./service-definitions')
-const trace = require('./trace')
-const validate = require('./validate')
+} from './route.js'
+import { assertValidServiceDefinition } from './service-definitions.js'
+import trace from './trace.js'
+import validate from './validate.js'
 
 const defaultBadgeDataSchema = Joi.object({
   label: Joi.string(),
@@ -108,11 +108,14 @@ class BaseService {
    *
    * See also the config schema in `./server.js` and `doc/server-secrets.md`.
    *
-   * To use the configured auth in the handler or fetch method, pass the
-   * credentials to the request. For example:
-   * - `{ options: { auth: this.authHelper.basicAuth } }`
-   * - `{ options: { headers: this.authHelper.bearerAuthHeader } }`
-   * - `{ options: { qs: { token: this.authHelper._pass } } }`
+   * To use the configured auth in the handler or fetch method, wrap the
+   * _request() input params in a call to one of:
+   * - this.authHelper.withBasicAuth()
+   * - this.authHelper.withBearerAuthHeader()
+   * - this.authHelper.withQueryStringAuth()
+   *
+   * For example:
+   * this._request(this.authHelper.withBasicAuth({ url, schema, options }))
    *
    * @abstract
    * @type {module:core/base-service/base~Auth}
@@ -143,6 +146,8 @@ class BaseService {
       license: 3600,
       version: 300,
       debug: 60,
+      downloads: 900,
+      social: 900,
     }
     return cacheLengths[this.category]
   }
@@ -202,10 +207,10 @@ class BaseService {
   }
 
   constructor(
-    { sendAndCacheRequest, authHelper, metricHelper },
+    { requestFetcher, authHelper, metricHelper },
     { handleInternalErrors }
   ) {
-    this._requestFetcher = sendAndCacheRequest
+    this._requestFetcher = requestFetcher
     this.authHelper = authHelper
     this._handleInternalErrors = handleInternalErrors
     this._metricHelper = metricHelper
@@ -213,7 +218,18 @@ class BaseService {
 
   async _request({ url, options = {}, errorMessages = {} }) {
     const logTrace = (...args) => trace.logTrace('fetch', ...args)
-    logTrace(emojic.bowAndArrow, 'Request', url, '\n', options)
+    let logUrl = url
+    const logOptions = Object.assign({}, options)
+    if ('searchParams' in options) {
+      const params = new URLSearchParams(options.searchParams)
+      logUrl = `${url}?${params.toString()}`
+      delete logOptions.searchParams
+    }
+    logTrace(
+      emojic.bowAndArrow,
+      'Request',
+      `${logUrl}\n${JSON.stringify(logOptions, null, 2)}`
+    )
     const { res, buffer } = await this._requestFetcher(url, options)
     await this._meterResponse(res, buffer)
     logTrace(emojic.dart, 'Response status code', res.statusCode)
@@ -262,7 +278,7 @@ class BaseService {
   /**
    * Asynchronous function to handle requests for this service. Take the route
    * parameters (as defined in the `route` property), perform a request using
-   * `this._sendAndCacheRequest`, and return the badge data.
+   * `this._requestFetcher`, and return the badge data.
    *
    * @abstract
    * @param {object} namedParams Params parsed from route pattern
@@ -407,10 +423,16 @@ class BaseService {
   }
 
   static register(
-    { camp, handleRequest, githubApiProvider, metricInstance },
+    {
+      camp,
+      handleRequest,
+      githubApiProvider,
+      librariesIoApiProvider,
+      metricInstance,
+    },
     serviceConfig
   ) {
-    const { cacheHeaders: cacheHeaderConfig, fetchLimitBytes } = serviceConfig
+    const { cacheHeaders: cacheHeaderConfig } = serviceConfig
     const { regex, captureNames } = prepareRoute(this.route)
     const queryParams = getQueryParamNames(this.route)
 
@@ -423,15 +445,15 @@ class BaseService {
       regex,
       handleRequest(cacheHeaderConfig, {
         queryParams,
-        handler: async (queryParams, match, sendBadge, request) => {
+        handler: async (queryParams, match, sendBadge) => {
           const metricHandle = metricHelper.startRequest()
 
           const namedParams = namedParamsForMatch(captureNames, match, this)
           const serviceData = await this.invoke(
             {
-              sendAndCacheRequest: request.asPromise,
-              sendAndCacheRequestWithCallbacks: request,
+              requestFetcher: fetch,
               githubApiProvider,
+              librariesIoApiProvider,
               metricHelper,
             },
             serviceConfig,
@@ -452,7 +474,6 @@ class BaseService {
           metricHandle.noteResponseSent()
         },
         cacheLength: this._cacheLength,
-        fetchLimitBytes,
       })
     )
   }
@@ -552,4 +573,4 @@ class BaseService {
  *    An HTML string that is included in the badge popup.
  */
 
-module.exports = BaseService
+export default BaseService

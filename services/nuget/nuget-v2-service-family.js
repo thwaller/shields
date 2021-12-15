@@ -1,13 +1,16 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { nonNegativeInteger } = require('../validators')
-const { BaseJsonService, BaseXmlService, NotFound, redirector } = require('..')
-const {
+import Joi from 'joi'
+import { nonNegativeInteger } from '../validators.js'
+import {
+  BaseJsonService,
+  BaseXmlService,
+  NotFound,
+  redirector,
+} from '../index.js'
+import {
   renderVersionBadge,
   renderDownloadBadge,
   odataToObject,
-} = require('./nuget-helpers')
+} from './nuget-helpers.js'
 
 function createFilter({ packageName, includePrereleases }) {
   const releaseTypeFilter = includePrereleases
@@ -55,14 +58,16 @@ async function fetch(
   { odataFormat, baseUrl, packageName, includePrereleases = false }
 ) {
   const url = `${baseUrl}/Packages()`
-  const qs = { $filter: createFilter({ packageName, includePrereleases }) }
+  const searchParams = {
+    $filter: createFilter({ packageName, includePrereleases }),
+  }
 
   let packageData
   if (odataFormat === 'xml') {
     const data = await serviceInstance._requestXml({
       schema: xmlSchema,
       url,
-      options: { qs },
+      options: { searchParams },
     })
     packageData = odataToObject(data.feed.entry)
   } else if (odataFormat === 'json') {
@@ -71,7 +76,7 @@ async function fetch(
       url,
       options: {
         headers: { Accept: 'application/atom+json,application/json' },
-        qs,
+        searchParams,
       },
     })
     packageData = data.d.results[0]
@@ -123,20 +128,14 @@ function createServiceFamily({
   }
 
   class NugetVersionService extends Base {
-    static get name() {
-      return `${name}Version`
-    }
+    static name = `${name}Version`
 
-    static get category() {
-      return 'version'
-    }
+    static category = 'version'
 
-    static get route() {
-      return {
-        base: `${serviceBaseUrl}/v`,
-        pattern: ':packageName',
-        queryParamSchema,
-      }
+    static route = {
+      base: `${serviceBaseUrl}/v`,
+      pattern: ':packageName',
+      queryParamSchema,
     }
 
     static get examples() {
@@ -157,10 +156,8 @@ function createServiceFamily({
       ]
     }
 
-    static get defaultBadgeData() {
-      return {
-        label: defaultLabel,
-      }
+    static defaultBadgeData = {
+      label: defaultLabel,
     }
 
     static render(props) {
@@ -193,19 +190,13 @@ function createServiceFamily({
   })
 
   class NugetDownloadService extends Base {
-    static get name() {
-      return `${name}Downloads`
-    }
+    static name = `${name}Downloads`
 
-    static get category() {
-      return 'downloads'
-    }
+    static category = 'downloads'
 
-    static get route() {
-      return {
-        base: serviceBaseUrl,
-        pattern: 'dt/:packageName',
-      }
+    static route = {
+      base: serviceBaseUrl,
+      pattern: 'dt/:packageName',
     }
 
     static get examples() {
@@ -238,8 +229,4 @@ function createServiceFamily({
   return { NugetVersionService, NugetVersionRedirector, NugetDownloadService }
 }
 
-module.exports = {
-  createFilter,
-  fetch,
-  createServiceFamily,
-}
+export { createFilter, fetch, createServiceFamily }

@@ -1,7 +1,5 @@
-'use strict'
-
-const Joi = require('@hapi/joi')
-const { BaseJsonService, NotFound } = require('..')
+import Joi from 'joi'
+import { BaseJsonService, NotFound } from '../index.js'
 
 const latestBuildSchema = Joi.object({
   count: Joi.number().required(),
@@ -14,13 +12,11 @@ const latestBuildSchema = Joi.object({
     .required(),
 }).required()
 
-module.exports = class AzureDevOpsBase extends BaseJsonService {
-  static get auth() {
-    return {
-      passKey: 'azure_devops_token',
-      authorizedOrigins: ['https://dev.azure.com'],
-      defaultToEmptyStringForUser: true,
-    }
+export default class AzureDevOpsBase extends BaseJsonService {
+  static auth = {
+    passKey: 'azure_devops_token',
+    authorizedOrigins: ['https://dev.azure.com'],
+    defaultToEmptyStringForUser: true,
   }
 
   async fetch({ url, options, schema, errorMessages }) {
@@ -44,7 +40,7 @@ module.exports = class AzureDevOpsBase extends BaseJsonService {
     // Microsoft documentation: https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-5.0
     const url = `https://dev.azure.com/${organization}/${project}/_apis/build/builds`
     const options = {
-      qs: {
+      searchParams: {
         definitions: definitionId,
         $top: 1,
         statusFilter: 'completed',
@@ -53,7 +49,7 @@ module.exports = class AzureDevOpsBase extends BaseJsonService {
     }
 
     if (branch) {
-      options.qs.branchName = `refs/heads/${branch}`
+      options.searchParams.branchName = `refs/heads/${branch}`
     }
 
     const json = await this.fetch({
