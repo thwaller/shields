@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: services/downloads</title>
+    <title>JSDoc: Module: services/contributor-count</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: services/downloads</h1>
+    <h1 class="page-title">Module: services/contributor-count</h1>
 
     
 
@@ -29,6 +29,8 @@
 <header>
     
         
+            
+        
     
 </header>
 
@@ -36,6 +38,84 @@
     <div class="container-overview">
     
         
+            <div class="description"><p>Common functions and utilities for tasks related to contributor count.</p></div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_contributor-count.js.html">services/contributor-count.js</a>, <a href="services_contributor-count.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
     
@@ -64,7 +144,7 @@
     
 
     
-    <h4 class="name" id="~renderDownloadsBadge"><span class="type-signature">(inner) </span>renderDownloadsBadge<span class="signature">(attrs)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="~contributorColor"><span class="type-signature">(inner) </span>contributorColor<span class="signature">(contributorCount)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
     
@@ -72,8 +152,168 @@
 
 
 <div class="description">
-    <p>Handles rendering concerns of badges that display
-download counts, with override/customization support</p>
+    <p>Determines the color used for a badge based on the contributor count.
+The color varies from red to bright green as the contributor count increases.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>contributorCount</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Contributor count</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_contributor-count.js.html">services/contributor-count.js</a>, <a href="services_contributor-count.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Badge color</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~renderContributorBadge"><span class="type-signature">(inner) </span>renderContributorBadge<span class="signature">(attrs)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Handles rendering concerns of badges that display contributor count.
+Determines the message and color of the badge according to the contributor count.</p>
 </div>
 
 
@@ -125,7 +365,7 @@ download counts, with override/customization support</p>
 
             
 
-            <td class="description last"><p>Refer to individual attrs</p>
+            <td class="description last"><p>Refer to individual attributes</p>
                 <h6>Properties</h6>
                 
 
@@ -153,7 +393,40 @@ download counts, with override/customization support</p>
 
         <tr>
             
-                <td class="name"><code>downloads</code></td>
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If provided then badge label is set to this value</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>contributorCount</code></td>
             
 
             <td class="type">
@@ -177,212 +450,7 @@ download counts, with override/customization support</p>
 
             
 
-            <td class="description last"><p>Number of downloads</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>interval</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Period or interval the downloads occurred
-(e.g. day, week, month). If provided then this Will be reflected
-in the badge message unless overridden by other message-related parameters</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>version</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Version or tag that was downloaded
-which will be reflected in the badge label (unless the label is overridden)</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>labelOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge label is set to this
-value overriding any other label-related parameters</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>colorOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge color is set to this
-value instead of the color being based on the count of downloads</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>messageSuffixOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge message will
-will have this value added to the download count, separated with a space</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>versionedLabelPrefix</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge label will use
-this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. Defaults to 'downloads'</p></td>
+            <td class="description last"><p>Contributor count</p></td>
         </tr>
 
     
@@ -430,7 +498,7 @@ this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. D
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_downloads.js.html">services/downloads.js</a>, <a href="services_downloads.js.html#line29">line 29</a>
+        <a href="services_contributor-count.js.html">services/contributor-count.js</a>, <a href="services_contributor-count.js.html#line35">line 35</a>
     </li></ul></dd>
     
 
@@ -459,7 +527,7 @@ this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. D
 
         
 <div class="param-desc">
-    <p>Badge</p>
+    <p>Badge with label, message and color properties</p>
 </div>
 
 

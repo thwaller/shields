@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: core/token-pooling/token-pool</title>
+    <title>JSDoc: Source: services/contributor-count.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,225 +17,61 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: core/token-pooling/token-pool</h1>
+    <h1 class="page-title">Source: services/contributor-count.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="module-core_token-pooling_token-pool-Token.html">Token</a></dt>
-            <dd></dd>
-        
-            <dt><a href="module-core_token-pooling_token-pool-TokenPool.html">TokenPool</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="~sanitizeToken"><span class="type-signature">(inner) </span>sanitizeToken<span class="signature">(id)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Compute a one-way hash of the input string.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>token</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_token-pooling_token-pool.js.html">core/token-pooling/token-pool.js</a>, <a href="core_token-pooling_token-pool.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>hash</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Common functions and utilities for tasks related to contributor count.
+ *
+ * @module
+ */
+
+import { metric } from './text-formatters.js'
+
+/**
+ * Determines the color used for a badge based on the contributor count.
+ * The color varies from red to bright green as the contributor count increases.
+ *
+ * @param {number} contributorCount Contributor count
+ * @returns {string} Badge color
+ */
+function contributorColor(contributorCount) {
+  if (contributorCount > 2) {
+    return 'brightgreen'
+  } else if (contributorCount === 2) {
+    return 'yellow'
+  } else {
+    return 'red'
+  }
+}
+
+/**
+ * Handles rendering concerns of badges that display contributor count.
+ * Determines the message and color of the badge according to the contributor count.
+ *
+ * @param {object} attrs Refer to individual attributes
+ * @param {string} [attrs.label] If provided then badge label is set to this value
+ * @param {number} attrs.contributorCount Contributor count
+ * @returns {object} Badge with label, message and color properties
+ */
+function renderContributorBadge({ label, contributorCount }) {
+  return {
+    label,
+    message: metric(contributorCount),
+    color: contributorColor(contributorCount),
+  }
+}
+
+export { contributorColor, renderContributorBadge }
+</code></pre>
+        </article>
+    </section>
 
 
 

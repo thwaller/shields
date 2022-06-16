@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: services/downloads</title>
+    <title>JSDoc: Module: services/endpoint-common</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: services/downloads</h1>
+    <h1 class="page-title">Module: services/endpoint-common</h1>
 
     
 
@@ -29,6 +29,8 @@
 <header>
     
         
+            
+        
     
 </header>
 
@@ -36,6 +38,84 @@
     <div class="container-overview">
     
         
+            <div class="description"><p>Common functions and utilities for tasks related to endpoint badges.</p></div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_endpoint-common.js.html">services/endpoint-common.js</a>, <a href="services_endpoint-common.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
     
@@ -54,6 +134,82 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="~endpointSchema"><span class="type-signature">(inner, constant) </span>endpointSchema<span class="type-signature"> :object</span></h4>
+
+
+
+
+<div class="description">
+    <p>Joi schema for validating endpoint.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_endpoint-common.js.html">services/endpoint-common.js</a>, <a href="services_endpoint-common.js.html#line28">line 28</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -64,7 +220,7 @@
     
 
     
-    <h4 class="name" id="~renderDownloadsBadge"><span class="type-signature">(inner) </span>renderDownloadsBadge<span class="signature">(attrs)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="~fetchEndpointData"><span class="type-signature">(async, inner) </span>fetchEndpointData<span class="signature">(serviceInstance, attrs)</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -72,8 +228,7 @@
 
 
 <div class="description">
-    <p>Handles rendering concerns of badges that display
-download counts, with override/customization support</p>
+    <p>Fetches data from the endpoint and validates the data.</p>
 </div>
 
 
@@ -109,6 +264,29 @@ download counts, with override/customization support</p>
 
         <tr>
             
+                <td class="name"><code>serviceInstance</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Instance of Endpoint class</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>attrs</code></td>
             
 
@@ -125,7 +303,7 @@ download counts, with override/customization support</p>
 
             
 
-            <td class="description last"><p>Refer to individual attrs</p>
+            <td class="description last"><p>Refer to individual attributes</p>
                 <h6>Properties</h6>
                 
 
@@ -139,8 +317,6 @@ download counts, with override/customization support</p>
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
         
 
@@ -153,38 +329,7 @@ download counts, with override/customization support</p>
 
         <tr>
             
-                <td class="name"><code>downloads</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Number of downloads</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>interval</code></td>
+                <td class="name"><code>url</code></td>
             
 
             <td class="type">
@@ -197,29 +342,40 @@ download counts, with override/customization support</p>
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p>Period or interval the downloads occurred
-(e.g. day, week, month). If provided then this Will be reflected
-in the badge message unless overridden by other message-related parameters</p></td>
+            <td class="description last"><p>Endpoint URL</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>version</code></td>
+                <td class="name"><code>errorMessages</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object containing error messages for different error codes</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>validationPrettyErrorMessage</code></td>
             
 
             <td class="type">
@@ -232,157 +388,33 @@ in the badge message unless overridden by other message-related parameters</p></
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p>Version or tag that was downloaded
-which will be reflected in the badge label (unless the label is overridden)</p></td>
+            <td class="description last"><p>If provided then the error message is set to this value</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>labelOverride</code></td>
+                <td class="name"><code>includeKeys</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">boolean</span>
 
 
             
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p>If provided then the badge label is set to this
-value overriding any other label-related parameters</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>colorOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge color is set to this
-value instead of the color being based on the count of downloads</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>messageSuffixOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge message will
-will have this value added to the download count, separated with a space</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>versionedLabelPrefix</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge label will use
-this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. Defaults to 'downloads'</p></td>
+            <td class="description last"><p>If true then includes error details in error message</p></td>
         </tr>
 
     
@@ -430,7 +462,7 @@ this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. D
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_downloads.js.html">services/downloads.js</a>, <a href="services_downloads.js.html#line29">line 29</a>
+        <a href="services_endpoint-common.js.html">services/endpoint-common.js</a>, <a href="services_endpoint-common.js.html#line90">line 90</a>
     </li></ul></dd>
     
 
@@ -459,7 +491,317 @@ this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. D
 
         
 <div class="param-desc">
-    <p>Badge</p>
+    <p>Data fetched from endpoint</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~validateEndpointData"><span class="type-signature">(inner) </span>validateEndpointData<span class="signature">(data, attrs)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Strictly validate the data according to the endpoint schema.
+This rejects unknown/invalid keys.
+Optionally it prints those keys in the message to provide detailed feedback.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object containing the data for validation</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>attrs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Refer to individual attributes</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>prettyErrorMessage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If provided then error message is set to this value</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>includeKeys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If true then includes error details in error message, defaults to false</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_endpoint-common.js.html">services/endpoint-common.js</a>, <a href="services_endpoint-common.js.html#line59">line 59</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>Error if Joi validation fails due to invalid or no schema</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">InvalidResponse</span>
+|
+
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Value if Joi validation is success</p>
 </div>
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: services/downloads</title>
+    <title>JSDoc: Module: services/build-status</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: services/downloads</h1>
+    <h1 class="page-title">Module: services/build-status</h1>
 
     
 
@@ -29,6 +29,8 @@
 <header>
     
         
+            
+        
     
 </header>
 
@@ -36,6 +38,84 @@
     <div class="container-overview">
     
         
+            <div class="description"><p>Common functions and schemas for tasks related to build status.</p></div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_build-status.js.html">services/build-status.js</a>, <a href="services_build-status.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
     
@@ -54,6 +134,83 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="~isBuildStatus"><span class="type-signature">(inner, constant) </span>isBuildStatus<span class="type-signature"> :object</span></h4>
+
+
+
+
+<div class="description">
+    <p>Joi schema for validating Build Status.
+Checks if the build status is present in the list of allowed build status.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_build-status.js.html">services/build-status.js</a>, <a href="services_build-status.js.html#line65">line 65</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -64,7 +221,7 @@
     
 
     
-    <h4 class="name" id="~renderDownloadsBadge"><span class="type-signature">(inner) </span>renderDownloadsBadge<span class="signature">(attrs)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="~renderBuildStatusBadge"><span class="type-signature">(inner) </span>renderBuildStatusBadge<span class="signature">(attrs)</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -72,8 +229,8 @@
 
 
 <div class="description">
-    <p>Handles rendering concerns of badges that display
-download counts, with override/customization support</p>
+    <p>Handles rendering concerns of badges that display build status.
+Determines the message and color of the badge according to the build status.</p>
 </div>
 
 
@@ -125,7 +282,7 @@ download counts, with override/customization support</p>
 
             
 
-            <td class="description last"><p>Refer to individual attrs</p>
+            <td class="description last"><p>Refer to individual attributes</p>
                 <h6>Properties</h6>
                 
 
@@ -153,38 +310,7 @@ download counts, with override/customization support</p>
 
         <tr>
             
-                <td class="name"><code>downloads</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Number of downloads</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>interval</code></td>
+                <td class="name"><code>label</code></td>
             
 
             <td class="type">
@@ -210,16 +336,14 @@ download counts, with override/customization support</p>
 
             
 
-            <td class="description last"><p>Period or interval the downloads occurred
-(e.g. day, week, month). If provided then this Will be reflected
-in the badge message unless overridden by other message-related parameters</p></td>
+            <td class="description last"><p>If provided then badge label is set to this value</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>version</code></td>
+                <td class="name"><code>status</code></td>
             
 
             <td class="type">
@@ -234,8 +358,6 @@ in the badge message unless overridden by other message-related parameters</p></
             
                 <td class="attributes">
                 
-                    &lt;optional><br>
-                
 
                 
 
@@ -245,144 +367,7 @@ in the badge message unless overridden by other message-related parameters</p></
 
             
 
-            <td class="description last"><p>Version or tag that was downloaded
-which will be reflected in the badge label (unless the label is overridden)</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>labelOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge label is set to this
-value overriding any other label-related parameters</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>colorOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge color is set to this
-value instead of the color being based on the count of downloads</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>messageSuffixOverride</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge message will
-will have this value added to the download count, separated with a space</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>versionedLabelPrefix</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>If provided then the badge label will use
-this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. Defaults to 'downloads'</p></td>
+            <td class="description last"><p>Build status</p></td>
         </tr>
 
     
@@ -430,7 +415,7 @@ this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. D
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_downloads.js.html">services/downloads.js</a>, <a href="services_downloads.js.html#line29">line 29</a>
+        <a href="services_build-status.js.html">services/build-status.js</a>, <a href="services_build-status.js.html#line76">line 76</a>
     </li></ul></dd>
     
 
@@ -459,7 +444,7 @@ this value as the prefix for versioned badges, e.g. <code>foobar@v1.23</code>. D
 
         
 <div class="param-desc">
-    <p>Badge</p>
+    <p>Badge with label, message and color properties</p>
 </div>
 
 
